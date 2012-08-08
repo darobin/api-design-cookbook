@@ -5,7 +5,7 @@
     <title>Web API Design Cookbook</title>
     <script class='remove'>
       var respecConfig = {
-          specStatus: "ED",
+          specStatus: "unofficial",
           shortName:  "api-design",
           editors: [
             {
@@ -13,13 +13,7 @@
               url:        "http://berjon.com/",
               company:    "Robineko",
               companyURL: "http://robineko.com/"
-            },
-            {
-              name:       "Rick Waldron",
-              url:        "http://github.com/rwldrn/",
-              company:    "Bocoup, LLC",
-              companyURL: "http://bocoup.com/"
-            },
+            }
           ],
           edDraftURI:   "http://darobin.github.com/api-design-cookbook/",
           copyrightStart: 2011,
@@ -128,7 +122,7 @@
   }, false);
       </pre>
       <p>On one hand, most developers are quite familiar with DOM Events, and they make it easy to have several handlers for a given event.</p>
-      <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [[DeviceOrientation]] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
+      <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [[DEVICE-ORIENTATION]] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
       <p>
         Another is <dfn>returning an EventTarget object</dfn>, as pioneered by [[XMLHTTPREQUEST]]. This consists
         in opening a request that returns an object on which event handlers can be registered, then starting
