@@ -99,12 +99,12 @@
       </p>
       <pre class='example highlight'>
         navigator.petKitten(
-          function() {
-            console.log("kitten is purring");
-          },
-          function(err) {
-            console.log("kitten hates you, because: " + err);
-          }
+            function() {
+                console.log("kitten is purring");
+            },
+            function(err) {
+                console.log("kitten hates you, because: " + err);
+            }
         );
       </pre>
       <p>
@@ -117,9 +117,9 @@
       </p>
       <p>Another approach is to define new DOM Events that are called when an underlying system changes.</p>
       <pre class='example higlight'>
-  window.addEventListener("kittenpurr", function() {
-    console.log("kitten is purring");
-  }, false);
+        window.addEventListener("kittenpurr", function() {
+            console.log("kitten is purring");
+        }, false);
       </pre>
       <p>On one hand, most developers are quite familiar with DOM Events, and they make it easy to have several handlers for a given event.</p>
       <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [[DEVICE-ORIENTATION]] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
@@ -131,16 +131,16 @@
       <pre class='example highlight'>
         var kitpet = navigator.openKittenPetting();
 
-        kitpet.onpurr = function() {
-          console.log("kitten is purring");
+        kitpet.onpurr = function () {
+            console.log("kitten is purring");
         };
 
-        kitpet.ondrool = function() {
-          console.log("kitten is now drooling");
+        kitpet.ondrool = function () {
+            console.log("kitten is now drooling");
         };
 
-        kitpet.onviciousbite = function() {
-          console.log("kitten bit your hand off");
+        kitpet.onviciousbite = function () {
+            console.log("kitten bit your hand off");
         };
 
         kitpet.start();
@@ -157,12 +157,9 @@
         by as many pieces of information as are needed to capture the success.
       </p>
       <pre class='example highlight'>
-        navigator.petKitten(function(err, state) {
-          if (err) {
-            console.log("kitten mauled your face with extreme prejudice");
-          } else {
-            console.log("kittem manifest joy by " + state);
-          }
+        navigator.petKitten(function (err, state) {
+            if (err) console.log("kitten mauled your face with extreme prejudice");
+            else console.log("kittem manifest joy by " + state);
         });
       </pre>
       <p>
@@ -178,15 +175,10 @@
       </p>
       <pre class='example highlight'>
         var promise = navigator.petKitten();
-
-        promise.then(function() {
-
-          console.log("kitten is purring");
-
-        }).fail(function() {
-
-          console.log("kitten bit your hand off");
-
+        promise.then(function () {
+            console.log("kitten is purring");
+        }).fail(function () {
+            console.log("kitten bit your hand off");
         }).run();
       </pre>
       <p>
@@ -211,26 +203,20 @@
         There are several variants in this bad practice. First, is the lovingly terse approach:
       </p>
       <pre class='example highlight'>
-        if (foo.type === 17) {
-          doSomething();
-        }
+        if (foo.type === 17) doSomething();
       </pre>
       <p>
         Then there is the comment you have to paste every time:
       </p>
       <pre class='example highlight'>
         // check if this of the fungible type
-        if (foo.type === 17) {
-          doSomething();
-        }
+        if (foo.type === 17) doSomething();
       </pre>
       <p>
         Or we can have the uselessly long variant:
       </p>
       <pre class='example highlight'>
-        if (foo.type === FooInterface.FUNGIBLE_TYPE) {
-          doSomething();
-        }
+        if (foo.type === FooInterface.FUNGIBLE_TYPE) doSomething();
       </pre>
       <p>
         And there's the meh option:
@@ -238,17 +224,13 @@
       <pre class='example highlight'>
         var isFungible = FooInterface.FUNGIBLE_TYPE;
         // ...
-        if (foo.type === isFungible) {
-          doSomething();
-        }
+        if (foo.type === isFungible) doSomething();
       </pre>
       <p>
         None of the above is as simple, terse, and self-documenting as:
       </p>
       <pre class='example highlight'>
-        if (foo.type === "fungible") {
-          doSomething();
-        }
+        if (foo.type === "fungible") doSomething();
       </pre>
       <p>
         We're not in the 1970s, standardising UNIX system calls. Strings are lightweight enough,
@@ -286,7 +268,8 @@
     <section class='appendix'>
       <h2>Acknowledgements</h2>
       <p>
-        Many thanks to Cameron McCormack, Marcos Càceres, and Andreas Gal for their input.
+        Many thanks to the following people, in no particular order: Cameron McCormack, Marcos Càceres, 
+        Andreas Gal, Rick Waldron.
       </p>
     </section>
   </body>
