@@ -77,17 +77,52 @@
       <section>
         <h2>Casing</h2>
         <p>
-          Casing is relatively coherent across the platform
+          Casing is relatively coherent across the platform, and if you are familiar with JavaScript development
+          it should come to you rather naturally.
         </p>
         <p>
-          attributes and methods
+          Interfaces, dictionaries, exceptions, and callbacks all use “CamelCase”. That is to say no underscores are used
+          and the first letter of every word is in uppercase. The rules when one of those words is an acronym
+          are not necessarily well established — follow your instinct (or try to avoid acronyms).
         </p>
+        <pre class='example'>
+          FascinatingDocument
+          Node
+          SomethingBadHappened
+          XMLHttpRequest
+        </pre>
         <p>
-          constants (but see below)
+          Both attributes and methods use “pascalCase” also known as “interCaps”. Which is to say that the first
+          letter is lowercase, no underscores are used, and all the following logical words in the name
+          start with an uppercase letter.
         </p>
+        <pre class='example'>
+          obj.thisIsAnAttribute
+          obj.simple
+          obj.doSomethingNow()
+          obj.run()
+        </pre>
         <p>
-          event name and event attributes
+          Constants are all uppercase, with logical words separated by underscores. Families of constants tend
+          to have common suffixes. Please note that constants are decreasingly used and that it is likely you 
+          will not be having recourse to this construct very much (see <a href='#numerical-constants'>Don't 
+          Use Numerical Constants</a>).
         </p>
+        <pre class='example'>
+          REALLY_STUPID_ERROR
+          PASTA_SAUCE_TYPE
+        </pre>
+        <p>
+          Events are a bit special and for historical reasons have somewhat more convoluted rules. The interface 
+          that represents a specific event will follow the general rules for interfaces, ending with <code>Event</code>. 
+          But the event name will be all lowercase and with no underscores. Likewise, the <code>on*</code> event 
+          attribute will be the event name (all lowercase and glued together) simply prefixed with “<code>on</code>”.
+        </p>
+        <pre class='example'>
+          SomethingHappenedEvent
+          obj.addEventListener("somethinghappened", handler, false);
+          el.onsomethinghappened = handler;
+        </pre>
       </section>
       <section>
         <h2>Using attributes</h2>
@@ -102,6 +137,12 @@
         </p>
       </section>
       <section>
+        <h2>Namespacing and Prefixing</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section id='numerical-constants'>
         <h2>Don't Use Numerical Constants</h2>
         <p>
           Interfaces regularly require constant identifiers. You have a node and you want to know if it's
@@ -216,6 +257,12 @@
       </section>
       <section>
         <h2>Special Operations</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Exceptions</h2>
         <p>
           ...
         </p>
@@ -381,6 +428,12 @@
         </pre>
         <p>
           There is elegance and flexibility in promises, but to date they are used in no Web specification.
+        </p>
+      </section>
+      <section>
+        <h2>Specifying Events</h2>
+        <p>
+          ...
         </p>
       </section>
     </section>
