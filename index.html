@@ -13,6 +13,11 @@
               url:        "http://berjon.com/",
               company:    "Robineko",
               companyURL: "http://robineko.com/"
+            },
+            {
+              name:       "송정기(Jungkee Song)",
+              company:    "Samsung Electronics Co., Ltd.",
+              companyURL: "http://www.samsung.com/sec/"
             }
           ],
           edDraftURI:   "http://darobin.github.com/api-design-cookbook/",
@@ -294,13 +299,304 @@
     <section>
       <h2>WebIDL Constructs</h2>
       <p>
-        ...
+        WebIDL [[WEBIDL]] is a powerful and flexible schema language for APIs. It is a useful foundation in
+        ensuring that APIs can be defined interoperably without each and everyone of them needing to repeat
+        all manners of behavioural specifics.
+      </p>
+      <p>
+        It can however be somewhat daunting to use at times, and the intricacies of the platform mean that
+        it has some dark or at least non-obvious corners. This chapter endeavours to help clarify at least
+        enough of it that you will feel comfortable making use of it.
       </p>
       <section>
         <h2>Using Dictionaries</h2>
         <p>
-          ...
+          While designing Web APIs, you might encounter situations where you need to define an interface 
+          that has no method. That is, for certain requirements, you need a method to define a property 
+          bag object that would be expressed as an <code>Object</code> object or as an object literal in 
+          JavaScript implementation. This is where the dictionaries come into play.
         </p>
+        <p>
+          This section presents a guideline to use dictionaries at the right place in your specification 
+          without any common mistake. First, in the "When to use" section, we show the typical cases you can 
+          make use of dictionaries. Second, in the "How to use" section, we provide a list of features that you
+          can check in order not to make a common mistake with dictionary usage.
+        </p>
+        <section>
+          <h2>When to use</h2>
+          <p>
+            Property bag objects are commonly used to define optional parameters for certain
+            methods of given interfaces. Also, they can be used to define necessary data
+            structures and data formats in a given application context. Here are the 
+            representative examples:
+          </p>
+          <p>
+            <strong>Case 1: Arguments to Interface Method</strong>
+            When designing interfaces using WebIDL, you can use dictionaries to define a
+            property bag object that carries multiple arguments to its method. In many 
+            practices, the methods take dictionary value as an optional argument
+            although it is not mandatory.
+          </p>
+          <pre class='example highlight'>
+            // WebIDL
+            partial interface IDBDatabaseSync {
+                IDBObjectStoreSync createObjectStore (DOMString name, 
+                                                      optional IDBObjectStoreParameters optionalParameters);
+            };
+
+            dictionary IDBObjectStoreParameters {
+                DOMString? keyPath = null;
+                boolean autoIncrement = false;
+            };
+
+            // JavaScript
+            var parameters = {
+                keyPath: "id"
+            ,   autoIncrement: true
+            };
+            trans.db.createObjectStore("Contact", parameters);
+          </pre>
+          <p>
+            More examples in published specifications: 
+            <a href='http://www.w3.org/TR/FileAPI/#creating-revoking'>http://www.w3.org/TR/FileAPI/#creating-revoking</a>
+          </p>
+          <p>
+            <strong>Case 2: Arguments to Constructor</strong>
+            Using dictionaries, you can also define a constructor arguments to the given
+            interfaces. This allows the developers create and pass an object or an
+            object literal to the constructor of the JavaScript objects.
+          </p>
+          <pre class='example highlight'>
+            // WebIDL
+            [Constructor(IntentParameters params),
+             Constructor(DOMString action, DOMString type, optional any data, optional
+             sequence&lt;Transferable> transferList)]
+            interface Intent {
+                readonly attribute DOMString     action;
+                readonly attribute DOMString     type;
+                readonly attribute any           data;
+                readonly attribute MessagePort[] ports;
+                readonly attribute any           extras;
+                void postResult (any data, optional sequence&lt;Transferable> transferable);
+                void postFailure (any data);
+            };
+
+            dictionary IntentParameters {
+                DOMString              action;
+                DOMString              type;
+                any                    data;
+                sequence&lt;Transferable> transfer;
+                Object                 extras;
+                URL                    service;
+                sequence&lt;URL>          suggestions;
+            };
+
+            // JavaScript
+            var intent = new Intent({
+                                      action:    "http://intents.w3.org/pick",
+                                      type:      "image/png",
+                                      extras:    { multiple: true, count: 5 },
+                                      service:   "http://example.com/pick-image"
+                                  });
+          </pre>
+          <p>
+            More examples in published specifications:
+            <a href='http://www.w3.org/TR/2012/WD-dom-20120405/#interface-event'>http://www.w3.org/TR/2012/WD-dom-20120405/#interface-event</a>
+            or <a href='http://www.w3.org/TR/FileAPI/#blob'>http://www.w3.org/TR/FileAPI/#blob</a>
+          </p>
+          <p>
+            <strong>Case 3: User object</strong>
+            A dictionary is normatively defined as an associative array data type with a
+            fixed, ordered set of key-value pairs. That is, you can use a
+            dictionary to define a custom data type carrying a set of properties as an 
+            object format used in the given application context.
+          </p>
+          <pre class='example highlight'>
+            // WebIDL
+            partial dictionary Media {
+                MediaContent   content = {};
+                DOMString      title;
+                DOMString      description;
+                DOMString      type = "*.*";
+                DOMString     author;
+                DOMString     path;
+                float         size;
+                sequence&lt;DOMString>   tags;
+                Date          publishDate;
+                Resolution    resolution;
+            };
+
+            // JavaScript
+            var mediaSequence = [];
+            var mediaObject = {
+                content: { uri: "http://example.com/images/kitten.png" },
+                title:        "",
+                description:  "",
+                type:         "image/png",
+                author:       "",
+                path:         "/local/path/to/png/kitten.png",
+                size:         1000000,
+                tags:         ["tom and jerry", "miyau"],
+                publishedDate:  "",
+                resolution: { width: 1920, height: 1080 }
+            };
+            mediaSequence.push(mediaObject);
+            intent.postResult(mediaSequence);
+          </pre>
+          <p>
+            More examples in published specifications:
+            <a href='http://www.w3.org/TR/2012/WD-gallery-20120712/#the-media-dictionary'>http://www.w3.org/TR/2012/WD-gallery-20120712/#the-media-dictionary</a>
+            or
+            <a href='http://www.w3.org/TR/2012/WD-contacts-api-20120712/#the-contact-dictionary'>http://www.w3.org/TR/2012/WD-contacts-api-20120712/#the-contact-dictionary</a>
+          </p>
+        </section>
+        <section>
+          <h2>How to use</h2>
+          <section>
+            <h2>Use sequence type</h2>
+            <p>
+              Dictionaries are always passed by value. Hence, when you define a dictionary 
+              member that should carry an array of certain value, use sequence type rather 
+              than Array type. Sequences are always passed by value while arrays are
+              passed by reference.
+            </p>
+            <pre class='example'>
+              dictionary IntentParameters {
+                  DOMString              action;
+                  DOMString              type;
+                  any                    data;
+                  sequence&lt;Transferable> transfer;
+                  Object                 extras;
+                  URL                    service;
+                  sequence&lt;URL>         suggestions;
+              };
+            </pre>
+            <p>
+              In addition, there is another check point where sequence type should be used 
+              rather than array type. WebIDL describes that the dictionary 
+              type must not be used as a type of element of an array. Hence, when your 
+              dictionary has to carry an array of the dictionary values as its member,
+              use sequence type.
+            </p>
+            <pre class='example'>
+              dictionary DoNotUseLikeThis {
+                  IntentParameters[] params;
+              };
+
+              dictionary UseLikeThis {
+                  sequence&lt;IntentParameters> params;
+              };
+            </pre>
+          </section>
+          <section>
+            <h2>Inheritance</h2>
+            <p>
+              Dictionaries support inheritance as interface does. A dictionary must not 
+              be defined having a cycle in its hierarchy.
+            </p>
+            <pre class='example'>
+              dictionary Novel : Book {
+                  // dictionary-members...
+              };
+
+              dictionary Book : Novel {
+                  // dictionary-members...
+              };
+            </pre>
+          </section>
+          <section>
+            <h2>Optional Dictionary Member and Defaulting Values</h2>
+            <p>
+              On a given dictionary value, the presence of each dictionary member is
+              optional. Therefore, in order to indicate that certain members are required fields in
+              your specification, use default values. Dictionary members with default values
+              are always considered to be present.
+            </p>
+            <pre class='example'>
+              dictionary PropertyBag {
+                  DOMString iAmRequired = "default";
+                  DOMString iAmOptional;
+              };
+            </pre>
+            <p>
+              In the example, since <code>iAmRequired</code> has default value, it is always
+              considered as present when the dictionary value is passed. On the other hand, when
+              <code>iAmOptional</code> is missing, it is regarded as absent.
+            </p>
+          </section>
+          <section>
+            <h2>Attribute, Constant, or Exception fields</h2>
+            <p>
+              It is one of common mistakes that a dictionary type is used with attribute
+              field in interface definition. In face, dictionaries must not be used as the type
+              of attribute, constant or exception fields.
+            </p>
+            <pre class='example'>
+              interface HasWrongUsage {
+                  readonly attribute IAmDictionary dict;
+              };
+            </pre>
+            <p>
+              To correct it, use type any or object and describe in prose that the
+              attribute takes the type of the dictionary.
+            </p>
+            <pre class='example'>
+              interface HasRightUsage {
+                  readonly attribute any dict;
+              };
+            </pre>
+            <p>
+              In your spec, write "dict is of type IAmDictionary dictionary as defined in
+              [REFERENCE]".
+            </p>
+          </section>
+          <section>
+            <h2>No Nullable Dictionary</h2>
+            <p>
+              Do not use dictionary type as inner type of a nullable type. By definition in WebIDL dictionary, 
+              valued with <code>null</code>, is regarded to be an empty dictionary, which is not <code>null</code>.
+              (It can even have the value of members defined in their default values.)
+            </p>
+            <pre class='example'>
+              dictionary HasWrongUsage {
+                  IAmDictionary? dict;
+              };
+
+              dictionary HasRightUsage {
+                  IAmDictionary dict;
+              };
+            </pre>
+            <p>
+              As members of a dictionary are optional by definition, the developer who
+              reads your specification can omit the member that she intends to be not present in
+              the given application context.
+            </p>
+          </section>
+          <section>
+            <h2>Partial Dictionary</h2>
+            <p>
+              As with interfaces, the IDL for dictionaries can be split into multiple
+              parts by using partial dictionary definitions.
+            </p>
+            <pre class='example'>
+              dictionary SomeDictionary {
+                  // dictionary-members…
+              };
+
+              partial dictionary SomeDictionary {
+                  // dictionary-members…
+              };
+            </pre>
+          </section>
+          <section>
+            <h2>Extended attributes</h2>
+            <p>
+              Only the following two extended attributes are applicable to dictionary
+              members: <code>[Clamp]</code>, <code>[EnforceRange]</code>. They are discussed
+              in the section about <a href='#basic-types'>basic types</a>.
+            </p>
+        </section>
+      </section>
       </section>
       <section>
         <h2>Interfaces</h2>
@@ -310,6 +606,9 @@
         <!-- 
           - [Constructor], [ArrayClass], [NamedConstructor]
           - [NoInterfaceObject]
+          - partial
+          - inheritance
+          - multiple inheritance
         -->
       </section>
       <section>
