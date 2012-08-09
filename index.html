@@ -69,200 +69,331 @@
       </p>
     </section>
     <section>
-      <h2>Using Dictionaries</h2>
+      <h2>Basics</h2>
+      <p>
+        This section covers the very basics of API creation for the Web platform. If you are familiar with
+        the APIs found there, you might wish to simply skim the titles.
+      </p>
+      <section>
+        <h2>Casing</h2>
+        <p>
+          Casing is relatively coherent across the platform
+        </p>
+        <p>
+          attributes and methods
+        </p>
+        <p>
+          constants (but see below)
+        </p>
+        <p>
+          event name and event attributes
+        </p>
+      </section>
+      <section>
+        <h2>Using attributes</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>When To Be Asynchronous</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Don't Use Numerical Constants</h2>
+        <p>
+          Interfaces regularly require constant identifiers. You have a node and you want to know if it's
+          an element or a comment. You have a message and you want to know if it's email or SMS. That much makes
+          sense. What does not make sense is insisting on naming these things with numbers when we could name them
+          with, you know, names.
+        </p>
+        <p>
+          There are several variants in this bad practice. First, is the lovingly terse approach:
+        </p>
+        <pre class='example highlight'>
+          if (foo.type === 17) doSomething();
+        </pre>
+        <p>
+          Then there is the comment you have to paste every time:
+        </p>
+        <pre class='example highlight'>
+          // check if this of the fungible type
+          if (foo.type === 17) doSomething();
+        </pre>
+        <p>
+          Or we can have the uselessly long variant:
+        </p>
+        <pre class='example highlight'>
+          if (foo.type === FooInterface.FUNGIBLE_TYPE) doSomething();
+        </pre>
+        <p>
+          And there's the meh option:
+        </p>
+        <pre class='example highlight'>
+          var isFungible = FooInterface.FUNGIBLE_TYPE;
+          // ...
+          if (foo.type === isFungible) doSomething();
+        </pre>
+        <p>
+          None of the above is as simple, terse, and self-documenting as:
+        </p>
+        <pre class='example highlight'>
+          if (foo.type === "fungible") doSomething();
+        </pre>
+        <p>
+          We're not in the 1970s, standardising UNIX system calls. Strings are lightweight enough,
+          and readable. There is no need to define string constants to support these: just the plain
+          strings, defined as such in specification prose, work. In some languages, this can lose
+          static verification, but in JavaScript it makes no difference: if you misspell the the
+          string you might have equally misspelt the constant, with the same failure.
+        </p>
+        <p>
+          Additionally, interfaces that don't start out by listing a dozen (useless) constants are
+          more readable. The only downside to doing away with numerical constants is the negative
+          impact it may on occasion have on feature detection. It would however be better to rely
+          on other aspects that enable feature detection, since these constants can easily be added
+          for a half-baked feature (and frequently have been).
+        </p>
+      </section>
+    </section>
+    <section>
+      <h2>WebIDL Constructs</h2>
       <p>
         ...
       </p>
+      <section>
+        <h2>Using Dictionaries</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>When to use <code>NoInterfaceObject</code></h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Interfaces</h2>
+        <p>
+          ...
+        </p>
+        <!-- 
+          - [Constructor], [ArrayClass], [NamedConstructor]
+        -->
+      </section>
+      <section>
+        <h2>Constants</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Attributes</h2>
+        <p>
+          ...
+        </p>
+        <!-- 
+          - static
+        -->
+      </section>
+      <section>
+        <h2>Methods</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Overloading and Union Types</h2>
+        <p>
+          ...
+        </p>
+        <!-- 
+          - static
+        -->
+      </section>
+      <section>
+        <h2>Special Operations</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Callbacks</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Enums</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Typedefs and Implements</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Basic Types</h2>
+        <p>
+          ...
+        </p>
+        <!-- 
+          - [Clamp], [EnforceRange]
+          - [TreatNullAs] [TreatUndefinedAs]
+        -->
+      </section>
+      <section>
+        <h2>Sequences and Arrays</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>WebIDL Legacy Features</h2>
+        <p>
+          The features of WebIDL listed in this section have been specified for the sole purpose of describing
+          legacy APIs such as are found in “DOM 0”. It is particularly important that you do not use them unless
+          you are trying to document one such API — they must not be used for any kind of new work. The list
+          includes:
+        </p>
+        <p class='issue'>
+          Get an actual list.
+        </p>
+        <!-- 
+          - legacy*
+          - [LenientThis] 
+          - [NamedPropertiesObject] 
+          - [TreatNonCallableAsNull] 
+        -->
+      </section>
     </section>
     <section>
-      <h2>Ensuring that Feature Detection is Possible</h2>
+      <h2>Common Patterns</h2>
       <p>
         ...
       </p>
-    </section>
-    <section>
-      <h2>When To Be Asynchronous</h2>
-      <p>
-        ...
-      </p>
-    </section>
-    <section>
-      <h2>Specifying Callbacks</h2>
-      <p>
-        Asynchronous method calls require a point of reentry in the form of a callback. There are multiple
-        ways of specifying these, none of which is consensually consider the one and only approach.
-      </p>
-      <p>
-        One is <dfn>success/error callback functions</dfn>, as used in [[GEOLOCATION-API]]. It takes the shape of a method
-        call that accepts a callback function for success followed by one for errors. There may be arguments
-        before the success callback, and the error callback is usually optional.
-      </p>
-      <pre class='example highlight'>
-        navigator.petKitten(
-            function() {
-                console.log("kitten is purring");
-            },
-            function(err) {
-                console.log("kitten hates you, because: " + err);
-            }
-        );
-      </pre>
-      <p>
-        Downsides of this approach are that it is a little more verbose and does not encourage error handling. It
-        also lacks in extensibility since adding new arguments to the method will typically require placing them
-        after the optional error handler — making them de facto optional. Likewise, extending it to support not
-        just callbacks for success and error but also for other situations that may warrant reporting information
-        back (e.g. progress being made) is clumsy at best. Since it is only used in [[GEOLOCATION-API]] it does not
-        appear to be a required pattern for consistency.
-      </p>
-      <p>Another approach is to define new DOM Events that are called when an underlying system changes.</p>
-      <pre class='example higlight'>
-        window.addEventListener("kittenpurr", function() {
-            console.log("kitten is purring");
-        }, false);
-      </pre>
-      <p>On one hand, most developers are quite familiar with DOM Events, and they make it easy to have several handlers for a given event.</p>
-      <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [[DEVICE-ORIENTATION]] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
-      <p>
-        Another is <dfn>returning an EventTarget object</dfn>, as pioneered by [[XMLHTTPREQUEST]]. This consists
-        in opening a request that returns an object on which event handlers can be registered, then starting
-        that request with a specific call.
-      </p>
-      <pre class='example highlight'>
-        var kitpet = navigator.openKittenPetting();
+      <section>
+        <h2>Ensuring that Feature Detection is Possible</h2>
+        <p>
+          ...
+        </p>
+      </section>
+      <section>
+        <h2>Specifying Callbacks</h2>
+        <p>
+          Asynchronous method calls require a point of reentry in the form of a callback. There are multiple
+          ways of specifying these, none of which is consensually consider the one and only approach.
+        </p>
+        <p>
+          One is <dfn>success/error callback functions</dfn>, as used in [[GEOLOCATION-API]]. It takes the shape of a method
+          call that accepts a callback function for success followed by one for errors. There may be arguments
+          before the success callback, and the error callback is usually optional.
+        </p>
+        <pre class='example highlight'>
+          navigator.petKitten(
+              function() {
+                  console.log("kitten is purring");
+              },
+              function(err) {
+                  console.log("kitten hates you, because: " + err);
+              }
+          );
+        </pre>
+        <p>
+          Downsides of this approach are that it is a little more verbose and does not encourage error handling. It
+          also lacks in extensibility since adding new arguments to the method will typically require placing them
+          after the optional error handler — making them de facto optional. Likewise, extending it to support not
+          just callbacks for success and error but also for other situations that may warrant reporting information
+          back (e.g. progress being made) is clumsy at best. Since it is only used in [[GEOLOCATION-API]] it does not
+          appear to be a required pattern for consistency.
+        </p>
+        <p>Another approach is to define new DOM Events that are called when an underlying system changes.</p>
+        <pre class='example higlight'>
+          window.addEventListener("kittenpurr", function() {
+              console.log("kitten is purring");
+          }, false);
+        </pre>
+        <p>On one hand, most developers are quite familiar with DOM Events, and they make it easy to have several handlers for a given event.</p>
+        <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [[DEVICE-ORIENTATION]] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
+        <p>
+          Another is <dfn>returning an EventTarget object</dfn>, as pioneered by [[XMLHTTPREQUEST]]. This consists
+          in opening a request that returns an object on which event handlers can be registered, then starting
+          that request with a specific call.
+        </p>
+        <pre class='example highlight'>
+          var kitpet = navigator.openKittenPetting();
 
-        kitpet.onpurr = function () {
-            console.log("kitten is purring");
-        };
+          kitpet.onpurr = function () {
+              console.log("kitten is purring");
+          };
 
-        kitpet.ondrool = function () {
-            console.log("kitten is now drooling");
-        };
+          kitpet.ondrool = function () {
+              console.log("kitten is now drooling");
+          };
 
-        kitpet.onviciousbite = function () {
-            console.log("kitten bit your hand off");
-        };
+          kitpet.onviciousbite = function () {
+              console.log("kitten bit your hand off");
+          };
 
-        kitpet.start();
-      </pre>
-      <p>
-        The approach is the most verbose and does not encourage error handling, but it does have the advantages
-        of being trivially extended for greater feedback, and of being familiar to users of [[XMLHTTPREQUEST]]
-        (and now [[INDEXEDDB]]). It can, however, feel rather overkill if extensions for additional events does
-        not seem likely.
-      </p>
-      <p>
-        Then there are <dfn>NodeJS style callbacks</dfn>. For every asynchronous operation, every callback takes
-        as first parameter an error object which is <code>null</code> when the operation was a success, followed
-        by as many pieces of information as are needed to capture the success.
-      </p>
-      <pre class='example highlight'>
-        navigator.petKitten(function (err, state) {
-            if (err) console.log("kitten mauled your face with extreme prejudice");
-            else console.log("kittem manifest joy by " + state);
-        });
-      </pre>
-      <p>
-        The primary value in this approach is that it puts errors "right there" where they are likely to be handled.
-        Its consistency is also very helpful in creating chains of callbacks, a feature that proves precious
-        when multiple callbacks can become nested. The major downside of this approach is that it is currently
-        not used in the rest of stack and therefore probably only familiar to NodeJS developers (which granted
-        represent a fast-growing proportion of the general web developer population).
-      </p>
-      <p>
-        Finally there are <dfn>promises</dfn>. These are similar to <a>returning an EventTarget object</a> but
-        more generic and use a slightly different style.
-      </p>
-      <pre class='example highlight'>
-        var promise = navigator.petKitten();
-        promise.then(function () {
-            console.log("kitten is purring");
-        }).fail(function () {
-            console.log("kitten bit your hand off");
-        }).run();
-      </pre>
-      <p>
-        There is elegance and flexibility in promises, but to date they are used in no Web specification.
-      </p>
+          kitpet.start();
+        </pre>
+        <p>
+          The approach is the most verbose and does not encourage error handling, but it does have the advantages
+          of being trivially extended for greater feedback, and of being familiar to users of [[XMLHTTPREQUEST]]
+          (and now [[INDEXEDDB]]). It can, however, feel rather overkill if extensions for additional events does
+          not seem likely.
+        </p>
+        <p>
+          Then there are <dfn>NodeJS style callbacks</dfn>. For every asynchronous operation, every callback takes
+          as first parameter an error object which is <code>null</code> when the operation was a success, followed
+          by as many pieces of information as are needed to capture the success.
+        </p>
+        <pre class='example highlight'>
+          navigator.petKitten(function (err, state) {
+              if (err) console.log("kitten mauled your face with extreme prejudice");
+              else console.log("kittem manifest joy by " + state);
+          });
+        </pre>
+        <p>
+          The primary value in this approach is that it puts errors "right there" where they are likely to be handled.
+          Its consistency is also very helpful in creating chains of callbacks, a feature that proves precious
+          when multiple callbacks can become nested. The major downside of this approach is that it is currently
+          not used in the rest of stack and therefore probably only familiar to NodeJS developers (which granted
+          represent a fast-growing proportion of the general web developer population).
+        </p>
+        <p>
+          Finally there are <dfn>promises</dfn>. These are similar to <a>returning an EventTarget object</a> but
+          more generic and use a slightly different style.
+        </p>
+        <pre class='example highlight'>
+          var promise = navigator.petKitten();
+          promise.then(function () {
+              console.log("kitten is purring");
+          }).fail(function () {
+              console.log("kitten bit your hand off");
+          }).run();
+        </pre>
+        <p>
+          There is elegance and flexibility in promises, but to date they are used in no Web specification.
+        </p>
+      </section>
     </section>
-    <section>
-      <h2>Exceptions</h2>
+    <section class='appendix'>
+      <h2>Other Sources</h2>
       <p>
-        ...
-      </p>
-    </section>
-    <section>
-      <h2>Don't Use Numerical Constants</h2>
-      <p>
-        Interfaces regularly require constant identifiers. You have a node and you want to know if it's
-        an element or a comment. You have a message and you want to know if it's email or SMS. That much makes
-        sense. What does not make sense is insisting on naming these things with numbers when we could name them
-        with, you know, names.
+        A number of other sources provide information that can be useful in writing specifications. This list
+        is by no means complete, suggestions are welcome.
       </p>
       <p>
-        There are several variants in this bad practice. First, is the lovingly terse approach:
-      </p>
-      <pre class='example highlight'>
-        if (foo.type === 17) doSomething();
-      </pre>
-      <p>
-        Then there is the comment you have to paste every time:
-      </p>
-      <pre class='example highlight'>
-        // check if this of the fungible type
-        if (foo.type === 17) doSomething();
-      </pre>
-      <p>
-        Or we can have the uselessly long variant:
-      </p>
-      <pre class='example highlight'>
-        if (foo.type === FooInterface.FUNGIBLE_TYPE) doSomething();
-      </pre>
-      <p>
-        And there's the meh option:
-      </p>
-      <pre class='example highlight'>
-        var isFungible = FooInterface.FUNGIBLE_TYPE;
-        // ...
-        if (foo.type === isFungible) doSomething();
-      </pre>
-      <p>
-        None of the above is as simple, terse, and self-documenting as:
-      </p>
-      <pre class='example highlight'>
-        if (foo.type === "fungible") doSomething();
-      </pre>
-      <p>
-        We're not in the 1970s, standardising UNIX system calls. Strings are lightweight enough,
-        and readable. There is no need to define string constants to support these: just the plain
-        strings, defined as such in specification prose, work. In some languages, this can lose
-        static verification, but in JavaScript it makes no difference: if you misspell the the
-        string you might have equally misspelt the constant, with the same failure.
-      </p>
-      <p>
-        Additionally, interfaces that don't start out by listing a dozen (useless) constants are
-        more readable. The only downside to doing away with numerical constants is the negative
-        impact it may on occasion have on feature detection. It would however be better to rely
-        on other aspects that enable feature detection, since these constants can easily be added
-        for a half-baked feature (and frequently have been).
-      </p>
-    </section>
-    <section>
-      <h2>When to use <code>NoInterfaceObject</code></h2>
-      <p>
-        ...
-      </p>
-    </section>
-    <section>
-      <h2>WebIDL Legacy Features</h2>
-      <p>
-        The features of WebIDL listed in this section have been specified for the sole purpose of describing
-        legacy APIs such as are found in “DOM 0”. It is particularly important that you do not use them unless
-        you are trying to document one such API — they must not be used for any kind of new work. The list
-        includes:
-      </p>
-      <p class='issue'>
-        Get an actual list.
+        Anne maintains a document called <a href='http://wiki.whatwg.org/wiki/Howto_spec'>How To Spec</a> on 
+        how to specify certain features of the platform. Some parts of it are tailored to the specific markup
+        that is used when processing specifications with Anolis, but the general advice is sound.
       </p>
     </section>
     <section class='appendix'>
