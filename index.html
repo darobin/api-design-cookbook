@@ -176,7 +176,38 @@
       <section>
         <h2>When To Be Asynchronous</h2>
         <p>
-          ...
+          The Web platform's runtime model is based on a single-threaded event loop. Because of that, any time
+          a method requires even a little bit of time to run, it blocks the thread, and therefore the execution
+          of anything else on the page — leading to bad user experience.
+        </p>
+        <p>
+          Example of operations that can take a while to complete include reading from the network, accessing the
+          disk, performing a database search, or waking a sensor up.
+        </p>
+        <p>
+          Another case in which asynchronous operations are required is for all security entry points. Some operations
+          (e.g. obtaining the device's physical location) can require the user agent to obtain the user's permission.
+          If that were to be done synchronously, the entire application would freeze while the user makes her decision.
+          This is undesirable in terms of user experience, but it also a bad security model. The user needs to have
+          all the time she wants in order to make such decisions and should not feel pressured by a frozen application
+          (people make bad security decisions when they want to get something done).
+        </p>
+        <p>
+          It can seem tempting to make methods either synchronous or asynchronous at the developer's discretion.
+          The simple answer to that is: don't. The result can be catastrophic: for instance, while in development 
+          a method that has to interact with a remote resource may return quickly because of light load on the 
+          server and proximity between the developer (who is using a powerful device on a fast network) and the 
+          server, so that the synchronous call may seem fine. But once deployed, it can cause long, very 
+          perceivable freezes for the end-users. The <code>XMLHttpRequest</code> interface does make that option
+          available on its <code>open()</code> method and there is broad consensus that it was a bad decision that
+          should never be emulated.
+        </p>
+        <p>
+          A context that is not similarly affected by synchronous issues is that of Web Workers (since they run in a 
+          separate conceptual thread from the Web application's user interface). In such cases, it can sometimes be useful to
+          provide a synchronous variant of an asynchronous interface that would be available solely in a Worker context.
+          This is primarily done in order to make development simpler in such contexts and should not be considered 
+          required.
         </p>
       </section>
       <section>
@@ -254,18 +285,13 @@
         </p>
       </section>
       <section>
-        <h2>When to use <code>NoInterfaceObject</code></h2>
-        <p>
-          ...
-        </p>
-      </section>
-      <section>
         <h2>Interfaces</h2>
         <p>
           ...
         </p>
         <!-- 
           - [Constructor], [ArrayClass], [NamedConstructor]
+          - [NoInterfaceObject]
         -->
       </section>
       <section>
