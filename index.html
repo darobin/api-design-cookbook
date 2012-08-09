@@ -210,12 +210,6 @@
           required.
         </p>
       </section>
-      <section>
-        <h2>Namespacing and Prefixing</h2>
-        <p>
-          ...
-        </p>
-      </section>
       <section id='numerical-constants'>
         <h2>Don't Use Numerical Constants</h2>
         <p>
@@ -271,6 +265,30 @@
           on other aspects that enable feature detection, since these constants can easily be added
           for a half-baked feature (and frequently have been).
         </p>
+      </section>
+      <section>
+        <h2>Namespacing and Prefixing</h2>
+        <p>
+          If you are developing functionality for use inside of a Web runtime (but not a browser) that is likely to
+          both share code with existing Web projects (typically, libraries like jQuery) and that also plans to
+          evolve and integrate improvements to the Web platform on a regular basis, then you should make sure
+          that the interfaces and methods you add cannot conflict with ones added to the core platform.
+        </p>
+        <p>
+          For methods and attributes that extend existing interfaces, you should rely on vendor prefixing, i.e. simply
+          prefixing your additions with a short string that is your company's or project's name.
+        </p>
+        <pre class='example highlight'>
+          xhr.acmePassiveFTP();
+          document.acmeDigitalSignature;
+        </pre>
+        <p>
+          For interfaces that you add, rather than prefixing all of their names which can get tedious, it can
+          be simpler to just make them available under your own namespaced object.
+        </p>
+        <pre class='example highlight'>
+          var toaster = new acme.Toaster();
+        </pre>
       </section>
     </section>
     <section>
