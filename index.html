@@ -127,8 +127,51 @@
       <section>
         <h2>Using attributes</h2>
         <p>
-          ...
+          It is not always obvious when one should use an attribute rather than a method. The basic rule is simple:
+          use attributes as often as possible.
         </p>
+        <p>
+          Never use <code>getFoo()</code>/<code>setFoo()</code> accessor pairs unless it is very clear that these are
+          operations that have strong effects beyond just changing the property of the object. If you wish your interface
+          to also be usable in a language other than JavaScript and for which such accessors tend to be needed, the bindings
+          for that language can naturally generate the accessor pair. Don't do this:
+        </p>
+        <pre class='illegal-example' title='Bad usage'>
+          var len = obj.getLength();
+          arr.setLength(num);
+        </pre>
+        <p>
+          But rather:
+        </p>
+        <pre class='example'>
+          var len = obj.length;
+          arr.length = num;
+        </pre>
+        <p>
+          Beyond operations that obviously require a method (that take parameters, return a computed value, carry out
+          an action, etc.) there are specific cases in which what might at first seem like a candidate for being
+          an attribute is best handled as a method:
+        </p>
+        <dl>
+          <dt>Modifies the value</dt>
+          <dd>
+            In some cases there may be relations between objects such that when one is set as the value of another
+            it needs to be updated to reflect its end of the relationship as well. For instance, when setting
+            <code class='highlight'>objA.child = objB</code> it may be necessary to set <code>objB.parent</code>
+            to <code>objA</code> behind the scenes. Such side effects call for a method: <code>objA.setChild(objB)</code>.
+          </dd>
+          <dt>Asynchronous access</dt>
+          <dd>
+            In some instances, an object may be available but it is best if some of its fields are only loaded 
+            lazily because they require time to compute. The canonical example is the size of a file. If processing
+            objects representing files, making the size of each file available immediately will be costly, and 
+            acquiring it synchronously upon attribute access would lead to poor performance (those <code>stat</code>
+            calls are not cheap). In such cases it is best to make the accessor an asynchronous method that is
+            passed a callback such as <code class='highlight'>someFile.size(function (bytes) { … })</code> 
+            (or, if there are many such properties on the object, have a single call to load them all, for instance
+            <code class='highlight'>someFile.stat(function (info) { … })</code>).
+          </dd>
+        </dl>
       </section>
       <section>
         <h2>When To Be Asynchronous</h2>
