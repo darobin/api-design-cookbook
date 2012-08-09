@@ -601,15 +601,63 @@
       <section>
         <h2>Interfaces</h2>
         <p>
-          ...
+          Interfaces are the core work horse of WebIDL as they are the means through which functionality is
+          exposed. They are introduced with the <code>interface</code> keyword, have a name, and a body that
+          contains their definition in terms of constants, attributes, and methods (known as “operations” in 
+          WebIDL). A typical interface looks like this:
         </p>
-        <!-- 
-          - [Constructor], [ArrayClass], [NamedConstructor]
-          - [NoInterfaceObject]
-          - partial
-          - inheritance
-          - multiple inheritance
-        -->
+        <pre class='example highlight'>
+          interface BeerBottle {
+              // body goes here
+          };
+        </pre>
+        <p>
+          Without modifiers, an interface will become available in the global context as an object with the
+          same name.
+        </p>
+        <p>
+          Interfaces can inherit from other interfaces, in which case they acquire their properties. Inheritance
+          is specified like this:
+        </p>
+        <pre class='example highlight'>
+          interface BeerBottle : Bottle {
+              // body
+          };
+          interface Spork : Spoon, Fork {
+              // body
+          };
+        </pre>
+        <p>
+          As in the last example above, an interface can inherit from any number of other interfaces. This practice
+          however is discouraged if it can be avoided as it entails more complex resolution rules and can be
+          difficult to implement in some contexts. Multiple inheritance is often a sign that the API design should
+          be revisited and can be simplified.
+        </p>
+        <section>
+          <h2>Partial Interfaces</h2>
+          <p>
+            ...
+          </p>
+          <!-- 
+            put the explanation I wrote about replacing Foo implements Bar with this here
+          -->
+        </section>
+        <section>
+          <h2>[Constructor], [ArrayClass], [NamedConstructor]</h2>
+          <p>
+            ...
+          </p>
+        </section>
+        <section>
+          <h2>When to use [NoInterfaceObject]</h2>
+          <p>
+            ...
+          </p>
+          <!-- 
+            - rarely needed, double check
+            - dictionaries, partials
+          -->
+        </section>
       </section>
       <section>
         <h2>Constants</h2>
