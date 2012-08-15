@@ -879,11 +879,62 @@
       <section>
         <h2>Attributes</h2>
         <p>
-          ...
+          Attributes are a fundamental building block of interfaces. They are used to specify data fields of
+          a given type. An attribute is introduced with the <code>attribute</code> keyword.
         </p>
-        <!-- 
-          - static
-        -->
+        <p>
+          They can be read-only in which case they cannot be assigned to, or read-write. It is important to
+          note that if the value of a read-only attribute is not atomic but has attributes of its own, those
+          are not made read-only as well — they keep operating just as specified by that type. An example:
+        </p>
+        <pre class='example highlight'>
+          interface Name {
+              attribute DOMString givenName;
+              attribute DOMString familyName;
+          };
+          interface Person {
+              readonly attribute Name fullName;
+          };
+        </pre>
+        <p>
+          In the above definition, it is impossible to assign a new value of the <code>fullName</code> field
+          of <code>Person</code>. So you could not do the following: <code>billie.name = someName;</code>.
+          But the fields of the <code>Name</code> object itself stay just as re-write so that they can still
+          be set, as in <code>billie.name.familyName = "The Cat";</code>.
+        </p>
+        <p>
+          An attribute can also be said to be <code>static</code>, in which case it is an attribute of the
+          interface rather than being associated with the object. Static attributes are rarely good ideas
+          and can tend to indicate a bad design.
+        </p>
+        <pre class='example highlight'>
+          // set the debug flag globally
+          interface Runtime {
+              static attribute boolean debug;
+          };
+        </pre>
+        <p>
+          A specific behaviour can be added to attributes to define how a given object is turned into a string,
+          using the <code>stringifier</code> modifier. When a object is cast to a string, if a <code>stringifier</code>
+          has been specified (there can be only one) then the string produced will be the value of that 
+          attribute. Naturally, that attribute has to be of type <code>DOMString</code>.
+        </p>
+        <pre class='example highlight'>
+          // another Person interface
+          [Constructor(DOMString name, short age)]
+          interface Unicorn {
+              stringifier attribute DOMString fullName;
+              attribute short age;
+          };
+        </pre>
+        <p>
+          This can then be used with the following code:
+        </p>
+        <pre class='example highlight'>
+          var uni = new Unicorn("Tab", 42);
+          document.getElementById("output-unicorn").textContent = uni;
+          // that element now has content "Tab";
+        </pre>
       </section>
       <section>
         <h2>Methods</h2>
