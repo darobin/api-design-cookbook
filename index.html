@@ -850,7 +850,31 @@
       <section>
         <h2>Enums</h2>
         <p>
-          ...
+          An enumeration is used to specify a set of strings that are acceptable, it is typically used
+          to define options that are restricted to a limited vocabulary.
+        </p>
+        <p>
+          Enumerations are defined with the <code>enum</code> keyword, a type name, and then a list of
+          strings (with no duplicates) inside curly brackets. The name can then be used where type
+          identifiers usually appear.
+        </p>
+        <pre class='example highlight'>
+          enum Unit {
+              "m",
+              "cm",
+              "mm"
+          };
+          interface Unicorn {
+              void setHornSize (unsigned long length, Unit unit);
+          };
+          // This works
+          //    unicorn.setHornSize(42, "cm");
+          // This blows up as well it should
+          //    unicorn.setHornSize(7, "in");
+        </pre>
+        <p>
+          When an attribute is defined to be an enumeration type, then assigning a value to it that is
+          not in the enumerated set simply does nothing.
         </p>
       </section>
       <section>
