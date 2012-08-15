@@ -1024,8 +1024,42 @@
       <section>
         <h2>Overloading and Union Types</h2>
         <p>
-          ...
+          WebIDL makes it possible to use overloading of methods in interfaces so that there can be
+          more than one method with a given name that takes a different set of arguments. This happens
+          simply by specifying the method more than once.
         </p>
+        <p>
+          Note that method overloading is rarely needed and should usually be avoided unless there is
+          no better solution, if only because the restrictions on how it can be used and the resolution
+          rules can be quite complex. A lot of the cases in which one may think that overloading may
+          be required are actually better addressed with optional arguments, variadic arguments,
+          or at times union types.
+        </p>
+        <p>
+          Union types are used where types can be used, but instead of specifying just one type they
+          indicated that the values can be of several different types. They are specified between parentheses,
+          with each type separated by the <code>or</code> keyword.
+        </p>
+        <pre class='example highlight'>
+          interface Party {
+              void bookDate ((Date or unsigned long or DOMString) date);
+          };
+          // I can now call with...
+          //  a JS Date object
+          //    party.bookDate(new Date(…));
+          //  time since epoch
+          //    party.bookDate(1337998907987);
+          //  a magic string
+          //    party.bookDate("tomorrow");
+        </pre>
+        <p>
+          This can be useful for return values as well:
+        </p>
+        <pre class='example highlight'>
+          interface Cryptozoology {
+              (Dahut or Unicorn) findAnimal ();
+          };
+        </pre>
       </section>
       <section>
         <h2>Exceptions</h2>
