@@ -1091,8 +1091,34 @@
       <section>
         <h2>Callbacks</h2>
         <p>
-          ...
+          It is very common for asynchronous methods in Web APIs to accept callbacks, which are functions
+          that can be called with specific arguments when called back. These are specified with the
+          <code>callback</code> keyword, a name, a return type, and an arguments list which is similar
+          to that used for a method.
         </p>
+        <p>
+          Specifying callbacks is simple:
+        </p>
+        <pre class='example highlight'>
+          // defining callbacks
+          callback LandingOk = void (unsigned long landingSpeed);
+          callback LandingFail = void (DOMString gravity, short casualties);
+          
+          // using callbacks
+          interface FlyingUnicorn {
+              void land (LandingOk, LandingFail);
+          };
+          
+          // in code
+          myFlyingUnicorn.land(
+                  function (speed) {
+                      console.log("Successfully landed at " + speed + "kph!");
+                  }
+              ,   function (severity, dead) {
+                      console.log("Crashed landing. Damage level: " + severity + ". Dead elves: " + dead);
+                  }
+          );
+        </pre>
       </section>
       <section>
         <h2>Sequences and Arrays</h2>
