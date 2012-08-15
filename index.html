@@ -636,11 +636,59 @@
         <section>
           <h2>Partial Interfaces</h2>
           <p>
-            ...
+            It is common to have to add functionality to an existing interface, or to wish to define a single
+            interface spread over multiple locations. This can happen primarily for two reasons:
           </p>
-          <!-- 
-            put the explanation I wrote about replacing Foo implements Bar with this here
-          -->
+          <ul>
+            <li>
+              The interface may be defined in another specification and extended by a new one. This is a
+              relatively common pattern for core interfaces off which things may be attached (e.g.
+              <code>Navigator</code>). It's an important aspect of the Web platform's core extensibility.
+            </li>
+            <li>
+              Some editors occasionally consider it useful to split the definition of an interface into
+              smaller pieces as part of the same document. This is sometimes done to make the specification
+              clearer (though the advantages here are debatable), or sometimes because part of the interface
+              is optional.
+            </li>
+          </ul>
+          <p>
+            In both cases there is a need to extend an existing interface, and inheritance is not the solution
+            since one effectively wishes to mix functionality into the existing interface, and not create a
+            new one.
+          </p>
+          <p>
+            A construct that was previously used for this <em>but is no longer recommended</em> was
+            to create the extending interface with <code>[NoInterfaceObject]</code> and then state
+            that the existing interface <code>implements</code> the extending one. This is
+            exemplified below:
+          </p>
+          <pre class='illegal-example highlight'>
+            // we wish to add findUnicorns() to Navigator
+            [NoInterfaceObject]
+            interface UnicornNavigator {
+                Unicorns findUnicorns (DOMString name);
+            };
+            Navigator implements UnicornNavigator;
+            // you can now call navigator.findUnicorns("tab");
+          </pre>
+          <p>
+            This is clunky however, and no longer necessary. It can still be found in some drafts but should
+            not be copied.
+          </p>
+          <p>
+            The proper way of implementing this feature is to use <code>partial</code> interfaces. These
+            are just like regular interfaces, except that they are defined to specify simply a fragment of
+            the whole, and can therefore add to existing interfaces that may be defined anywhere else.
+          </p>
+          <p>
+            The previous example can therefore best be rewritten as:
+          </p>
+          <pre class='example highlight'>
+            partial interface Navigator {
+                Unicorns findUnicorns (DOMString name);
+            };
+          </pre>
         </section>
         <section>
           <h2>[Constructor], [ArrayClass], [NamedConstructor]</h2>
