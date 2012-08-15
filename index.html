@@ -1064,7 +1064,28 @@
       <section>
         <h2>Exceptions</h2>
         <p>
-          ...
+          Exceptions are special classes that can be used to be thrown. They are very limited interfaces
+          that can only define constants, and a limited kind of attribute (known as “fields”) that are
+          defined solely by a type and a name.
+        </p>
+        <p>
+          All exceptions automatically get a <code>message</code> and a <code>name</code> field (for which
+          the specification should provide values), such that those need not be explicitly specified.
+        </p>
+        <p>
+          It is <strong>strongly</strong> recommended that new specifications do <strong>not</strong> define
+          new exceptions, but rather reuse <code>DOMException</code> while providing a specific <code>name</code>
+          for it.
+        </p>
+        <p>
+          In addition to <code>DOMException</code>, a number of predefined exceptions are also available that 
+          can be reused by specifications. This list is: <code>Error</code>, <code>EvalError</code>, <code>RangeError</code>, 
+          <code>ReferenceError</code>, <code>SyntaxError</code>, <code>TypeError</code> and <code>URIError</code>
+          (these correspond to their JavaScript equivalents as defined in [[ECMA-262]]).
+        </p>
+        <p>
+          Due to these constraints on usage, we have decided not to delve deeply into exceptions in this
+          section.
         </p>
       </section>
       <section>
