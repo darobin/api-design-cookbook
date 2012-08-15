@@ -309,7 +309,7 @@
         enough of it that you will feel comfortable making use of it.
       </p>
       <section>
-        <h2>Using Dictionaries</h2>
+        <h2 id='dictionaries'>Using Dictionaries</h2>
         <p>
           While designing Web APIs, you might encounter situations where you need to define an interface 
           that has no method. That is, for certain requirements, you need a method to define a property 
@@ -691,20 +691,135 @@
           </pre>
         </section>
         <section>
-          <h2>[Constructor], [ArrayClass], [NamedConstructor]</h2>
+          <h2>[Constructor] and [NamedConstructor]</h2>
           <p>
-            ...
+            If you have read WebIDL as found in many specifications, you will have noticed that there are
+            special constructs that can decorate existing ones in order to enhance them. These are called
+            “extended attributes” and their goal is not to change the WebIDL itself — which is to say that
+            they don't modify the abstract schema described by WebIDL — but to influence how the concrete
+            language bindings operate.
           </p>
+          <p>
+            In this section we look at several extended attributes that have a bearing on how interfaces
+            are bound in JavaScript.
+          </p>
+          <p>
+            By default, when an interface is bound in JavaScript, an interface object for it is available
+            globally but it is not constructible. That is to say that it can be used for instance for
+            <code>instanceof</code> testing, or that it can expose some members such as static methods,
+            static attributes, or constants but you can't construct it with <code>new</code>. Try out
+            for instance in your JavaScript console:
+          </p>
+          <pre class='example highlight'>
+            new Node()
+            // TypeError: Node is not a constructor
+          </pre>
+          <p>
+            Therefore, in order to use a constructor in JavaScript, you will need to use the <code>[Constructor]</code>
+            extended attribute. <code>[Constructor]</code> can optionally take parameters (not giving it parentheses is
+            the same as giving it an empty set) and you can specify multiple ones.
+          </p>
+          <p>
+            An example might make this clearer:
+          </p>
+          <pre class='example highlight'>
+            // new Unicorn();
+            [Constructor]       // the same as [Constructor()]
+            interface Unicorn {
+                // ...
+            };
+            
+            // new Unicorn();
+            // new Unicorn("tab");
+            // new Unicorn(5, 82);
+            [Constructor,
+             Constructor(DOMString name),
+             Constructor(unsigned long wingspan, unsigned long age)]
+            interface Unicorn {
+                // ...
+            };
+          </pre>
+          <p>
+            At times it is desirable to have the constructor for an interface have a different name from that
+            of the interface. For such cases, use the <code>[NamedConstructor]</code> extended attribute. It
+            works in the exact same way as <code>[Constructor]</code>, except that it also accepts an identifier
+            that specifies the name to use for the constructor. An example will show the syntax:
+          </p>
+          <pre class='example highlight'>
+            // new Rose();
+            // new Rose("pink");
+            [NamedConstructor=Rose,
+             NamedConstructor=Rose(DOMString colour)]
+            interface RosoideaeRosa {
+                // ...
+            };
+          </pre>
+        </section>
+        <section>
+          <h2>[ArrayClass]</h2>
+          <p>
+            Another useful extended attribute for interfaces is <code>[ArrayClass]</code>. It comes in handy when
+            it is necessary to define an interface that can behave just like a real JavaScript array. It is meant
+            to be used with the <code>getter</code>, <code>setter</code>, <code>creator</code>, and <code>deleter</code> 
+            keywords for indexed properties.
+          </p>
+          <p>
+            These keywords are rather straightforward:
+          </p>
+          <ul>
+            <li>
+              The <code>getter</code> defines what happens when a value is fetched from the array, so that for instance 
+              the following can work: <code class='highlight'>var carrots = shoppingList[7];</code>.
+            </li>
+            <li>
+              The <code>setter</code> and <code>creator</code> is the reverse and defines what happens when a value is 
+              set in the array (on an existing entry or a newly minted one — for arrays you usually want to use the
+              same operation for <code>setter</code> and <code>creator</code>), for instance with the following: 
+              <code class='highlight'>shoppingList[0] = "beer";</code> or 
+              <code class='highlight'>shoppingList.push("unicorns");</code>
+            </li>
+            <li>
+              Finally, the <code>deleter</code> defines what happens when a value is removed from the array, for instance 
+              with: <code class='highlight'>shoppingList.pop();</code>.
+            </li>
+          </ul>
+          <p>
+            Assembling this all together looks like this:
+          </p>
+          <pre class='example highlight'>
+            [ArrayClass]
+            interface ShoppingList {
+                attribute unsigned long length;
+                getter object getShoppingItem (unsigned long index);
+                // note how both creator and setter are used here
+                creator setter object setShoppingItem (unsigned long index, object item);
+                deleter void removeShoppingItem (unsigned long index);
+            };
+          </pre>
+          <p>
+            The above give you a <code>ShoppingList</code> interface. You could use it as follows:
+          </p>
+          <pre class='example highlight'>
+            var list = obj.findShoppingListFor("robin");
+            list = list.concat("beer tea basil ham cat-food".split(" "));
+            list.forEach(function (item) {
+                remindUser("Shop for " + item);
+            });
+            list.pop(); // bad cat
+            console.log("Getting " + list.join("\n"));
+          </pre>
         </section>
         <section>
           <h2>When to use [NoInterfaceObject]</h2>
           <p>
-            ...
+            There have been many excessive uses of <code>[NoInterfaceObject]</code> — unless you are absolutely
+            certain that it is what you want, you should avoid it. The odds are good that what you are looking
+            for is either a <a href='#partial-interfaces'>partial interface</a> or a <a href='#dictionaries'>dictionary</a>.
           </p>
-          <!-- 
-            - rarely needed, double check
-            - dictionaries, partials
-          -->
+          <p>
+            In practice it should only be used for abstract interfaces that enrich a concrete one through the
+            <code>implements</code> statement.
+          </p>
         </section>
       </section>
       <section>
