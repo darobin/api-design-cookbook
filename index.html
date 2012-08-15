@@ -825,6 +825,31 @@
       <section>
         <h2>Constants</h2>
         <p>
+          Constants are a simple construct that does exactly what it say on the tin. It creates a member of a given type on
+          an interface (or an exception) the value of which cannot be changed, introduced with the <code>const</code>
+          keyword.
+        </p>
+        <p>
+          Constants are limited in the values they can accept. They can take numerical values (including the likes of
+          <code>Infinity</code> and <code>NaN</code>), booleans, or <code>null</code> (for cases in which you might forget
+          what the value of <code>null</code> is). Examples tell you all you need to know about the syntax:
+        </p>
+        <pre class='example highlight'>
+          interface Something {
+              const short ANSWER = 42;
+              const boolean WRONG = false;
+              const unsigned long BIG_NUMBER = Infinity;
+          };
+        </pre>
+        <p>
+          While they were previously used rather commonly, there are decreasing reasons to want to resort to
+          constants on interfaces. Before using them, be sure to be aware of <a href='#enums'>Enums</a> and
+          <a href='numerical-constants'>Don't Use Numerical Constants</a>.
+        </p>
+      </section>
+      <section>
+        <h2>Enums</h2>
+        <p>
           ...
         </p>
       </section>
@@ -860,12 +885,6 @@
       </section>
       <section>
         <h2>Callbacks</h2>
-        <p>
-          ...
-        </p>
-      </section>
-      <section>
-        <h2>Enums</h2>
         <p>
           ...
         </p>
