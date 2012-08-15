@@ -939,11 +939,87 @@
       <section>
         <h2>Methods</h2>
         <p>
-          ...
+          Methods are the workhorses of WebIDL. In the specification they are known as “operations”, but
+          since everyone calls them methods we have decided to stick to this term as it will be more readily
+          understood. They are used to define behaviour.
         </p>
-        <!-- 
-          - static
-        -->
+        <p>
+          Methods have a return type, and a list of arguments which can be precisely specified. As for attributes,
+          a method can also be said to be <code>static</code>, in which case they become available on the
+          interface object directly.
+        </p>
+        <pre class='example highlight'>
+          interface KittenFactory {
+              static Kitten makeMeANewKitten (DOMString name);
+          };
+          // var billie = KittenFactory.makeMeANewKitten("Billie The Cat");
+        </pre>
+        <p>
+          The return type can be any type or <code>void</code>, which indicates that nothing is returned.
+        </p>
+        <p>
+          The most complex part of a method's definition is its arguments list. It can contain any number of
+          argument definitions, each of which has a type and a name; all of them separated by commas.
+        </p>
+        <p>
+          Note that it used to be that arguments were all preceded by the <code>in</code> keyword, which was
+          a leftover from OMG IDL. Since Web specifications make no use of the <code>out</code> and <code>inout</code>
+          argument styles of the aptly named OMG specification, the <code>in</code> keyword has been dropped and
+          must not be used.
+        </p>
+        <p>
+          A basic method therefore looks like this:
+        </p>
+        <pre class='example highlight'>
+          interface Unicorn {
+              void gallop (unsigned long speed, Pattern rhythm);
+              AudioStream speak ();
+          };
+        </pre>
+        <p>
+          The arguments can be modified in a number of ways. First, an argument can be marked as
+          <code>optional</code> in which case it can be omitted when the method is invoked. If so, 
+          it should be noted that all the arguments that are positioned after it in the list will 
+          also be considered optional.
+        </p>
+        <pre class='example highlight'>
+          enum Direction { "left", "right" };
+          interface Dahut {
+              void turnAround (optional Direction whichWay, short degrees);
+          };
+          // I can call someDahut.turnAround()
+        </pre>
+        <p>
+          Note that in the above it is not indicated that the <code>degrees</code> argument is optional even
+          though it implicitly is. For readability purposes, it is best to always indicate that an argument
+          is optional even when it implicitly is as someone scanning the method definition quickly from the
+          end might not notice it.
+        </p>
+        <p>
+          A problem with the above method definition is also that while my dahut can only turn left or
+          right, there is no indication of what happens if I omit the argument. Is it right or left? Or
+          random? This can be remedied in specification prose but it is better to specify a default
+          directly in the WebIDL, as follows:
+        </p>
+        <pre class='example highlight'>
+          enum Direction { "left", "right" };
+          interface Dahut {
+              void turnAround (optional Direction whichWay = "left", short degrees);
+          };
+          // when I call someDahut.turnAround(), it now turns left
+        </pre>
+        <p>
+          An argument can also be <em>variadic</em>. This indicates that that argument can be repeated zero or
+          more times when the method is called. This can only be done if it is the last argument in the arguments
+          list. Variadic arguments are specified by appending "<code>...</code>" to the type.
+        </p>
+        <pre class='example highlight'>
+          interface Restaurant {
+              DeferredFood orderFood (DOMString... dishName);
+          };
+          // I can now call
+          //  resto.orderFood("spam", "spam", "spam", "spam", "spam", "spam", "spam", "spam", "spam");
+        </pre>
       </section>
       <section>
         <h2>Overloading and Union Types</h2>
