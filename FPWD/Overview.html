@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Web API Design Cookbook</title>
+    
+    
+  <style>/*****************************************************************
+ * ReSpec 3 CSS
+ * Robin Berjon - http://berjon.com/
+ *****************************************************************/
+
+/* --- INLINES --- */
+em.rfc2119 { 
+    text-transform:     lowercase;
+    font-variant:       small-caps;
+    font-style:         normal;
+    color:              #900;
+}
+
+h1 acronym, h2 acronym, h3 acronym, h4 acronym, h5 acronym, h6 acronym, a acronym,
+h1 abbr, h2 abbr, h3 abbr, h4 abbr, h5 abbr, h6 abbr, a abbr {
+    border: none;
+}
+
+dfn {
+    font-weight:    bold;
+}
+
+a.internalDFN {
+    color:  inherit;
+    border-bottom:  1px solid #99c;
+    text-decoration:    none;
+}
+
+a.externalDFN {
+    color:  inherit;
+    border-bottom:  1px dotted #ccc;
+    text-decoration:    none;
+}
+
+a.bibref {
+    text-decoration:    none;
+}
+
+cite .bibref {
+    font-style: normal;
+}
+
+code {
+    color:  #ff4500;
+}
+
+
+/* --- --- */
+ol.algorithm { counter-reset:numsection; list-style-type: none; }
+ol.algorithm li { margin: 0.5em 0; }
+ol.algorithm li:before { font-weight: bold; counter-increment: numsection; content: counters(numsection, ".") ") "; }
+
+/* --- TOC --- */
+.toc a, .tof a {
+    text-decoration:    none;
+}
+
+a .secno, a .figno {
+    color:  #000;
+}
+
+ul.tof, ol.tof {
+    list-style: none outside none;
+}
+
+.caption {
+    margin-top: 0.5em;
+    font-style:   italic;
+}
+
+/* --- TABLE --- */
+table.simple {
+    border-spacing: 0;
+    border-collapse:    collapse;
+    border-bottom:  3px solid #005a9c;
+}
+
+.simple th {
+    background: #005a9c;
+    color:  #fff;
+    padding:    3px 5px;
+    text-align: left;
+}
+
+.simple th[scope="row"] {
+    background: inherit;
+    color:  inherit;
+    border-top: 1px solid #ddd;
+}
+
+.simple td {
+    padding:    3px 10px;
+    border-top: 1px solid #ddd;
+}
+
+.simple tr:nth-child(even) {
+    background: #f0f6ff;
+}
+
+/* --- DL --- */
+.section dd > p:first-child {
+    margin-top: 0;
+}
+
+.section dd > p:last-child {
+    margin-bottom: 0;
+}
+
+.section dd {
+    margin-bottom:  1em;
+}
+
+.section dl.attrs dd, .section dl.eldef dd {
+    margin-bottom:  0;
+}
+</style><style>/* --- EXAMPLES --- */
+div.example-title {
+    min-width: 7.5em;
+    color: #b9ab2d;
+}
+div.example-title span {
+    text-transform: uppercase;   
+}
+aside.example, div.example, div.illegal-example {
+    padding: 0.5em;
+    margin: 1em 0;
+    position: relative;
+    clear: both;
+}
+div.illegal-example { color: red }
+div.illegal-example p { color: black }
+aside.example, div.example {
+    padding: .5em;
+    border-left-width: .5em;
+    border-left-style: solid;
+    border-color: #e0cb52;
+    background: #fcfaee;    
+}
+
+aside.example div.example {
+    border-left-width: .1em;
+    border-color: #999;
+    background: #fff;
+}
+aside.example div.example div.example-title {
+    color: #999;
+}
+</style><style>/* --- ISSUES/NOTES --- */
+div.issue-title, div.note-title {
+    padding-right:  1em;
+    min-width: 7.5em;
+    color: #b9ab2d;
+}
+div.issue-title { color: #e05252; }
+div.note-title { color: #52e052; }
+div.issue-title span, div.note-title span {
+    text-transform: uppercase;
+}
+div.note, div.issue {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.note > p:first-child, .issue > p:first-child { margin-top: 0 }
+.issue, .note {
+    padding: .5em;
+    border-left-width: .5em;
+    border-left-style: solid;
+}
+div.issue, div.note {
+    padding: 0.5em;
+    margin: 1em 0;
+    position: relative;
+    clear: both;
+}
+span.note, span.issue { padding: .1em .5em .15em; }
+
+.issue {
+    border-color: #e05252;
+    background: #fbe9e9;
+}
+.note {
+    border-color: #52e052;
+    background: #e9fbe9;
+}
+
+
+</style><style>/* HIGHLIGHTS */
+code.prettyprint {
+    color:  inherit;
+}
+
+/* this from google-code-prettify */
+.pln{color:#000}@media screen{.str{color:#080}.kwd{color:#008}.com{color:#800}.typ{color:#606}.lit{color:#066}.pun,.opn,.clo{color:#660}.tag{color:#008}.atn{color:#606}.atv{color:#080}.dec,.var{color:#606}.fun{color:red}}@media print,projection{.str{color:#060}.kwd{color:#006;font-weight:bold}.com{color:#600;font-style:italic}.typ{color:#404;font-weight:bold}.lit{color:#044}.pun,.opn,.clo{color:#440}.tag{color:#006;font-weight:bold}.atn{color:#404}.atv{color:#060}}ol.linenums{margin-top:0;margin-bottom:0}li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}
+</style><link href="http://www.w3.org/StyleSheets/TR/W3C-WD" rel="stylesheet"><!--[if lt IE 9]><script src='undefined://www.w3.org/2008/site/js/html5shiv.js'></script><![endif]--></head>
+  <body><div class="head">
+  <p>
+    
+      <a href="http://www.w3.org/"><img src="http://www.w3.org/Icons/w3c_home" alt="W3C" height="48" width="72"></a>
+    
+  </p>
+  <h1 class="title" id="title">Web API Design Cookbook</h1>
+  
+  <h2 id="w3c-working-draft-02-october-2012"><abbr title="World Wide Web Consortium">W3C</abbr> Working Draft 02 October 2012</h2>
+  <dl>
+    
+      <dt>This version:</dt>
+      <dd><a href="http://www.w3.org/TR/2012/WD-api-design-20121002/">http://www.w3.org/TR/2012/WD-api-design-20121002/</a></dd>
+      <dt>Latest published version:</dt>
+      <dd><a href="http://www.w3.org/TR/api-design/">http://www.w3.org/TR/api-design/</a></dd>
+    
+    
+      <dt>Latest editor's draft:</dt>
+      <dd><a href="http://darobin.github.com/api-design-cookbook/">http://darobin.github.com/api-design-cookbook/</a></dd>
+    
+    
+    
+    
+    
+    
+    <dt>Editors:</dt>
+    <dd><a href="http://berjon.com/">Robin Berjon</a>, <a href="http://robineko.com/">Robineko</a></dd>
+<dd><span>송정기(Jungkee Song)</span>, <a href="http://www.samsung.com/sec/">Samsung Electronics Co., Ltd.</a></dd>
+
+    
+  </dl>
+  
+  
+  
+  
+    
+      <p class="copyright">
+        <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 
+        2011-2012
+        
+        <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> 
+        (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>,
+        <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>,
+        <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved.
+        <abbr title="World Wide Web Consortium">W3C</abbr> <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>,
+        <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and
+        <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.
+      </p>
+    
+  
+  <hr>
+</div>
+    <section class="introductory" id="abstract"><h2>Abstract</h2>
+      <p>
+        This document captures common practices in designing APIs that fit well into the Web platform as
+        a whole, using WebIDL [<cite><a href="#bib-WEBIDL" class="bibref">WEBIDL</a></cite>].
+      </p>
+    </section><section id="sotd" class="introductory"><h2>Status of This Document</h2>
+  
+    
+      
+        <p>
+          <em>This section describes the status of this document at the time of its publication. Other
+          documents may supersede this document. A list of current <abbr title="World Wide Web Consortium">W3C</abbr> publications and the latest revision
+          of this technical report can be found in the <a href="http://www.w3.org/TR/"><abbr title="World Wide Web Consortium">W3C</abbr> technical reports
+          index</a> at http://www.w3.org/TR/.</em>
+        </p>
+        
+      <p>
+        This document has been developed progressively over time with help from the WebApps WG
+        and the ScriptLib CG.
+      </p>
+    
+        <p>
+          This document was published by the <a href="http://www.w3.org/2009/dap/">Device APIs Working Group</a> and <a href="http://www.w3.org/2008/webapps/">Web Applications (WebApps) Working Group</a> as a First Public Working Draft.
+          
+          If you wish to make comments regarding this document, please send them to 
+          <a href="mailto:public-device-apis@w3.org">public-device-apis@w3.org</a> 
+          (<a href="mailto:public-device-apis-request@w3.org?subject=subscribe">subscribe</a>,
+          <a href="http://lists.w3.org/Archives/Public/public-device-apis/">archives</a>).
+          
+          
+          All feedback is welcome.
+        </p>
+        
+          <p>
+            Publication as a Working Draft does not imply endorsement by the <abbr title="World Wide Web Consortium">W3C</abbr> Membership.
+            This is a draft document and may be updated, replaced or obsoleted by other documents at 
+            any time. It is inappropriate to cite this document as other than work in progress.
+          </p>
+        
+        
+        <p>
+          
+            This document was produced by a group operating under the 
+            <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/">5 February 2004 <abbr title="World Wide Web Consortium">W3C</abbr> Patent Policy</a>.
+          
+          The group does not expect this document to become a <abbr title="World Wide Web Consortium">W3C</abbr> Recommendation.
+          
+            
+              <abbr title="World Wide Web Consortium">W3C</abbr> maintains a public list of any patent disclosures (<a href="http://www.w3.org/2004/01/pp-impl/43696/status" rel="disclosure">Device APIs Working Group</a>, <a href="http://www.w3.org/2004/01/pp-impl/42538/status" rel="disclosure">Web Applications (WebApps) Working Group</a>)
+            
+            made in connection with the deliverables of the group; that page also includes instructions for 
+            disclosing a patent. An individual who has actual knowledge of a patent which the individual believes contains
+            <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential">Essential Claim(s)</a> must disclose the
+            information in accordance with <a href="http://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure">section
+            6 of the <abbr title="World Wide Web Consortium">W3C</abbr> Patent Policy</a>.
+          
+          
+        </p>
+        
+      
+    
+  
+</section><section id="toc"><h2 class="introductory">Table of Contents</h2><ul class="toc"><li class="tocline"><a class="tocxref" href="#introduction"><span class="secno">1. </span>Introduction</a></li><li class="tocline"><a class="tocxref" href="#basics"><span class="secno">2. </span>Basics</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#casing"><span class="secno">2.1 </span>Casing</a></li><li class="tocline"><a class="tocxref" href="#using-attributes"><span class="secno">2.2 </span>Using attributes</a></li><li class="tocline"><a class="tocxref" href="#when-to-be-asynchronous"><span class="secno">2.3 </span>When To Be Asynchronous</a></li><li class="tocline"><a class="tocxref" href="#numerical-constants"><span class="secno">2.4 </span>Don't Use Numerical Constants</a></li><li class="tocline"><a class="tocxref" href="#namespacing-and-prefixing"><span class="secno">2.5 </span>Namespacing and Prefixing</a></li></ul></li><li class="tocline"><a class="tocxref" href="#webidl-constructs"><span class="secno">3. </span>WebIDL Constructs</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#using-dictionaries"><span class="secno">3.1 </span>Using Dictionaries</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#when-to-use"><span class="secno">3.1.1 </span>When to use</a></li><li class="tocline"><a class="tocxref" href="#how-to-use"><span class="secno">3.1.2 </span>How to use</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#use-sequence-type"><span class="secno">3.1.2.1 </span>Use sequence type</a></li><li class="tocline"><a class="tocxref" href="#inheritance"><span class="secno">3.1.2.2 </span>Inheritance</a></li><li class="tocline"><a class="tocxref" href="#optional-dictionary-member-and-defaulting-values"><span class="secno">3.1.2.3 </span>Optional Dictionary Member and Defaulting Values</a></li><li class="tocline"><a class="tocxref" href="#attribute-constant-or-exception-fields"><span class="secno">3.1.2.4 </span>Attribute, Constant, or Exception fields</a></li><li class="tocline"><a class="tocxref" href="#no-nullable-dictionary"><span class="secno">3.1.2.5 </span>No Nullable Dictionary</a></li><li class="tocline"><a class="tocxref" href="#partial-dictionary"><span class="secno">3.1.2.6 </span>Partial Dictionary</a></li><li class="tocline"><a class="tocxref" href="#extended-attributes"><span class="secno">3.1.2.7 </span>Extended attributes</a></li></ul></li></ul></li><li class="tocline"><a class="tocxref" href="#interfaces"><span class="secno">3.2 </span>Interfaces</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#partial-interfaces"><span class="secno">3.2.1 </span>Partial Interfaces</a></li><li class="tocline"><a class="tocxref" href="#constructor-and-namedconstructor"><span class="secno">3.2.2 </span>[Constructor] and [NamedConstructor]</a></li><li class="tocline"><a class="tocxref" href="#arrayclass"><span class="secno">3.2.3 </span>[ArrayClass]</a></li><li class="tocline"><a class="tocxref" href="#when-to-use-nointerfaceobject"><span class="secno">3.2.4 </span>When to use [NoInterfaceObject]</a></li></ul></li><li class="tocline"><a class="tocxref" href="#constants"><span class="secno">3.3 </span>Constants</a></li><li class="tocline"><a class="tocxref" href="#enums"><span class="secno">3.4 </span>Enums</a></li><li class="tocline"><a class="tocxref" href="#attributes"><span class="secno">3.5 </span>Attributes</a></li><li class="tocline"><a class="tocxref" href="#methods"><span class="secno">3.6 </span>Methods</a></li><li class="tocline"><a class="tocxref" href="#overloading-and-union-types"><span class="secno">3.7 </span>Overloading and Union Types</a></li><li class="tocline"><a class="tocxref" href="#exceptions"><span class="secno">3.8 </span>Exceptions</a></li><li class="tocline"><a class="tocxref" href="#callbacks"><span class="secno">3.9 </span>Callbacks</a></li><li class="tocline"><a class="tocxref" href="#sequences-and-arrays"><span class="secno">3.10 </span>Sequences and Arrays</a></li><li class="tocline"><a class="tocxref" href="#webidl-legacy-features"><span class="secno">3.11 </span>WebIDL Legacy Features</a></li></ul></li><li class="tocline"><a class="tocxref" href="#common-patterns"><span class="secno">4. </span>Common Patterns</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#ensuring-that-feature-detection-is-possible"><span class="secno">4.1 </span>Ensuring that Feature Detection is Possible</a></li><li class="tocline"><a class="tocxref" href="#specifying-callbacks"><span class="secno">4.2 </span>Specifying Callbacks</a></li><li class="tocline"><a class="tocxref" href="#specifying-events"><span class="secno">4.3 </span>Specifying Events</a></li></ul></li><li class="tocline"><a class="tocxref" href="#other-sources"><span class="secno">A. </span>Other Sources</a></li><li class="tocline"><a class="tocxref" href="#acknowledgements"><span class="secno">B. </span>Acknowledgements</a></li><li class="tocline"><a class="tocxref" href="#references"><span class="secno">C. </span>References</a><ul class="toc"><li class="tocline"><a class="tocxref" href="#normative-references"><span class="secno">C.1 </span>Normative references</a></li><li class="tocline"><a class="tocxref" href="#informative-references"><span class="secno">C.2 </span>Informative references</a></li></ul></li></ul></section>
+    
+    <section id="introduction">
+      <!--OddPage--><h2><span class="secno">1. </span>Introduction</h2>
+      <p>
+        Over a relatively short period of time the number of different APIs being created for use on the
+        Web has grown at a sustained pace. In working on these interfaces, many in the community discuss
+        the benefits of certain approaches over others and reach agreement as to the preferred solution when
+        facing a given problem.
+      </p>
+      <p>
+        Keeping track of all these gems is however difficult given the volume of work being carried on
+        in parallel and the sometimes disjointed nature of the groups involved. As a result, it can take
+        a long while and many arguments repeated almost identically before a good solution becomes common.
+      </p>
+      <p>
+        What's more, it is altogether too rare to garner feedback from developers who are actually using
+        these features in their day-to-day work. Because of this, several APIs have shipped with issues
+        that could have been caught earlier on in the process. This document therefore also endeavours
+        to elicit feedback from developers in order to make it more readily available to API designers.
+      </p>
+      <p>
+        The goal of this document is to capture such ideas as they appear and accrete them over time so as
+        to constitute a repository of knowledge on this topic. As a guide it does not however attempt to
+        supplant editors' brains in making decisions as to how to design their APIs, and consequently one
+        must keep in mind that the reasoning behind a specific recommendation is often more important than
+        its result. Furthermore, in some cases there may not be a single consensual best approach, and
+        editors will need to understand the tradeoffs involved in order to pick what works for them amongst
+        a set of options.
+      </p>
+    </section>
+    <section id="basics">
+      <!--OddPage--><h2><span class="secno">2. </span>Basics</h2>
+      <p>
+        This section covers the very basics of API creation for the Web platform. If you are familiar with
+        the APIs found there, you might wish to simply skim the titles.
+      </p>
+      <section id="casing">
+        <h3><span class="secno">2.1 </span>Casing</h3>
+        <p>
+          Casing is relatively coherent across the platform, and if you are familiar with JavaScript development
+          it should come to you rather naturally.
+        </p>
+        <p>
+          Interfaces, dictionaries, exceptions, and callbacks all use “CamelCase”. That is to say no underscores are used
+          and the first letter of every word is in uppercase. The rules when one of those words is an acronym
+          are not necessarily well established — follow your instinct (or try to avoid acronyms).
+        </p>
+        <div class="example"><div class="example-title"><span>Example 1</span></div><pre class="example">FascinatingDocument
+Node
+SomethingBadHappened
+XMLHttpRequest</pre></div>
+        <p>
+          Both attributes and methods use “pascalCase” also known as “interCaps”. Which is to say that the first
+          letter is lowercase, no underscores are used, and all the following logical words in the name
+          start with an uppercase letter.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 2</span></div><pre class="example">obj.thisIsAnAttribute
+obj.simple
+obj.doSomethingNow()
+obj.run()</pre></div>
+        <p>
+          Constants are all uppercase, with logical words separated by underscores. Families of constants tend
+          to have common suffixes. Please note that constants are decreasingly used and that it is likely you 
+          will not be having recourse to this construct very much (see <a href="#numerical-constants">Don't 
+          Use Numerical Constants</a>).
+        </p>
+        <div class="example"><div class="example-title"><span>Example 3</span></div><pre class="example">REALLY_STUPID_ERROR
+PASTA_SAUCE_TYPE</pre></div>
+        <p>
+          Events are a bit special and for historical reasons have somewhat more convoluted rules. The interface 
+          that represents a specific event will follow the general rules for interfaces, ending with <code>Event</code>. 
+          But the event name will be all lowercase and with no underscores. Likewise, the <code>on*</code> event 
+          attribute will be the event name (all lowercase and glued together) simply prefixed with “<code>on</code>”.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 4</span></div><pre class="example">SomethingHappenedEvent
+obj.addEventListener("somethinghappened", handler, false);
+el.onsomethinghappened = handler;</pre></div>
+      </section>
+      <section id="using-attributes">
+        <h3><span class="secno">2.2 </span>Using attributes</h3>
+        <p>
+          It is not always obvious when one should use an attribute rather than a method. The basic rule is simple:
+          use attributes as often as possible.
+        </p>
+        <p>
+          Never use <code>getFoo()</code>/<code>setFoo()</code> accessor pairs unless it is very clear that these are
+          operations that have strong effects beyond just changing the property of the object. If you wish your interface
+          to also be usable in a language other than JavaScript and for which such accessors tend to be needed, the bindings
+          for that language can naturally generate the accessor pair. Don't do this:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 5</span>: Bad usage</div><pre class="illegal-example">var len = obj.getLength();
+arr.setLength(num);</pre></div>
+        <p>
+          But rather:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 6</span></div><pre class="example">var len = obj.length;
+arr.length = num;</pre></div>
+        <p>
+          Beyond operations that obviously require a method (that take parameters, return a computed value, carry out
+          an action, etc.) there are specific cases in which what might at first seem like a candidate for being
+          an attribute is best handled as a method:
+        </p>
+        <dl>
+          <dt>Modifies the value</dt>
+          <dd>
+            In some cases there may be relations between objects such that when one is set as the value of another
+            it needs to be updated to reflect its end of the relationship as well. For instance, when setting
+            <code class="highlight prettyprint"><span class="pln">objA</span><span class="pun">.</span><span class="pln">child </span><span class="pun">=</span><span class="pln"> objB</span></code> it may be necessary to set <code>objB.parent</code>
+            to <code>objA</code> behind the scenes. Such side effects call for a method: <code>objA.setChild(objB)</code>.
+          </dd>
+          <dt>Asynchronous access</dt>
+          <dd>
+            In some instances, an object may be available but it is best if some of its fields are only loaded 
+            lazily because they require time to compute. The canonical example is the size of a file. If processing
+            objects representing files, making the size of each file available immediately will be costly, and 
+            acquiring it synchronously upon attribute access would lead to poor performance (those <code>stat</code>
+            calls are not cheap). In such cases it is best to make the accessor an asynchronous method that is
+            passed a callback such as <code class="highlight prettyprint"><span class="pln">someFile</span><span class="pun">.</span><span class="pln">size</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">bytes</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="pun">…</span><span class="pln"> </span><span class="pun">})</span></code> 
+            (or, if there are many such properties on the object, have a single call to load them all, for instance
+            <code class="highlight prettyprint"><span class="pln">someFile</span><span class="pun">.</span><span class="pln">stat</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">info</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="pun">…</span><span class="pln"> </span><span class="pun">})</span></code>).
+          </dd>
+        </dl>
+      </section>
+      <section id="when-to-be-asynchronous">
+        <h3><span class="secno">2.3 </span>When To Be Asynchronous</h3>
+        <p>
+          The Web platform's runtime model is based on a single-threaded event loop. Because of that, any time
+          a method requires even a little bit of time to run, it blocks the thread, and therefore the execution
+          of anything else on the page — leading to bad user experience.
+        </p>
+        <p>
+          Example of operations that can take a while to complete include reading from the network, accessing the
+          disk, performing a database search, or waking a sensor up.
+        </p>
+        <p>
+          Another case in which asynchronous operations are required is for all security entry points. Some operations
+          (e.g. obtaining the device's physical location) can require the user agent to obtain the user's permission.
+          If that were to be done synchronously, the entire application would freeze while the user makes her decision.
+          This is undesirable in terms of user experience, but it also a bad security model. The user needs to have
+          all the time she wants in order to make such decisions and should not feel pressured by a frozen application
+          (people make bad security decisions when they want to get something done).
+        </p>
+        <p>
+          It can seem tempting to make methods either synchronous or asynchronous at the developer's discretion.
+          The simple answer to that is: don't. The result can be catastrophic: for instance, while in development 
+          a method that has to interact with a remote resource may return quickly because of light load on the 
+          server and proximity between the developer (who is using a powerful device on a fast network) and the 
+          server, so that the synchronous call may seem fine. But once deployed, it can cause long, very 
+          perceivable freezes for the end-users. The <code>XMLHttpRequest</code> interface does make that option
+          available on its <code>open()</code> method and there is broad consensus that it was a bad decision that
+          should never be emulated.
+        </p>
+        <p>
+          A context that is not similarly affected by synchronous issues is that of Web Workers (since they run in a 
+          separate conceptual thread from the Web application's user interface). In such cases, it can sometimes be useful to
+          provide a synchronous variant of an asynchronous interface that would be available solely in a Worker context.
+          This is primarily done in order to make development simpler in such contexts and should not be considered 
+          required.
+        </p>
+      </section>
+      <section id="numerical-constants">
+        <h3><span class="secno">2.4 </span>Don't Use Numerical Constants</h3>
+        <p>
+          Interfaces regularly require constant identifiers. You have a node and you want to know if it's
+          an element or a comment. You have a message and you want to know if it's email or SMS. That much makes
+          sense. What does not make sense is insisting on naming these things with numbers when we could name them
+          with, you know, names.
+        </p>
+        <p>
+          There are several variants in this bad practice. First, is the lovingly terse approach:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 7</span></div><pre class="example highlight prettyprint"><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">foo</span><span class="pun">.</span><span class="pln">type </span><span class="pun">===</span><span class="pln"> </span><span class="lit">17</span><span class="pun">)</span><span class="pln"> doSomething</span><span class="pun">();</span></pre></div>
+        <p>
+          Then there is the comment you have to paste every time:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 8</span></div><pre class="example highlight prettyprint"><span class="com">// check if this of the fungible type</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">foo</span><span class="pun">.</span><span class="pln">type </span><span class="pun">===</span><span class="pln"> </span><span class="lit">17</span><span class="pun">)</span><span class="pln"> doSomething</span><span class="pun">();</span></pre></div>
+        <p>
+          Or we can have the uselessly long variant:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 9</span></div><pre class="example highlight prettyprint"><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">foo</span><span class="pun">.</span><span class="pln">type </span><span class="pun">===</span><span class="pln"> </span><span class="typ">FooInterface</span><span class="pun">.</span><span class="pln">FUNGIBLE_TYPE</span><span class="pun">)</span><span class="pln"> doSomething</span><span class="pun">();</span></pre></div>
+        <p>
+          And there's the meh option:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 10</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> isFungible </span><span class="pun">=</span><span class="pln"> </span><span class="typ">FooInterface</span><span class="pun">.</span><span class="pln">FUNGIBLE_TYPE</span><span class="pun">;</span><span class="pln">
+</span><span class="com">// ...</span><span class="pln">
+</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">foo</span><span class="pun">.</span><span class="pln">type </span><span class="pun">===</span><span class="pln"> isFungible</span><span class="pun">)</span><span class="pln"> doSomething</span><span class="pun">();</span></pre></div>
+        <p>
+          None of the above is as simple, terse, and self-documenting as:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 11</span></div><pre class="example highlight prettyprint"><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">foo</span><span class="pun">.</span><span class="pln">type </span><span class="pun">===</span><span class="pln"> </span><span class="str">"fungible"</span><span class="pun">)</span><span class="pln"> doSomething</span><span class="pun">();</span></pre></div>
+        <p>
+          We're not in the 1970s, standardising UNIX system calls. Strings are lightweight enough,
+          and readable. There is no need to define string constants to support these: just the plain
+          strings, defined as such in specification prose, work. In some languages, this can lose
+          static verification, but in JavaScript it makes no difference: if you misspell the the
+          string you might have equally misspelt the constant, with the same failure.
+        </p>
+        <p>
+          Additionally, interfaces that don't start out by listing a dozen (useless) constants are
+          more readable. The only downside to doing away with numerical constants is the negative
+          impact it may on occasion have on feature detection. It would however be better to rely
+          on other aspects that enable feature detection, since these constants can easily be added
+          for a half-baked feature (and frequently have been).
+        </p>
+      </section>
+      <section id="namespacing-and-prefixing">
+        <h3><span class="secno">2.5 </span>Namespacing and Prefixing</h3>
+        <p>
+          If you are developing functionality for use inside of a Web runtime (but not a browser) that is likely to
+          both share code with existing Web projects (typically, libraries like jQuery) and that also plans to
+          evolve and integrate improvements to the Web platform on a regular basis, then you should make sure
+          that the interfaces and methods you add cannot conflict with ones added to the core platform.
+        </p>
+        <p>
+          For methods and attributes that extend existing interfaces, you should rely on vendor prefixing, i.e. simply
+          prefixing your additions with a short string that is your company's or project's name.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 12</span></div><pre class="example highlight prettyprint"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">acmePassiveFTP</span><span class="pun">();</span><span class="pln">
+document</span><span class="pun">.</span><span class="pln">acmeDigitalSignature</span><span class="pun">;</span></pre></div>
+        <p>
+          For interfaces that you add, rather than prefixing all of their names which can get tedious, it can
+          be simpler to just make them available under your own namespaced object.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 13</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> toaster </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> acme</span><span class="pun">.</span><span class="typ">Toaster</span><span class="pun">();</span></pre></div>
+      </section>
+    </section>
+    <section id="webidl-constructs">
+      <!--OddPage--><h2><span class="secno">3. </span>WebIDL Constructs</h2>
+      <p>
+        WebIDL [<cite><a href="#bib-WEBIDL" class="bibref">WEBIDL</a></cite>] is a powerful and flexible schema language for APIs. It is a useful foundation in
+        ensuring that APIs can be defined interoperably without each and everyone of them needing to repeat
+        all manners of behavioural specifics.
+      </p>
+      <p>
+        It can however be somewhat daunting to use at times, and the intricacies of the platform mean that
+        it has some dark or at least non-obvious corners. This chapter endeavours to help clarify at least
+        enough of it that you will feel comfortable making use of it.
+      </p>
+      <section id="using-dictionaries">
+        <h3 id="dictionaries"><span class="secno">3.1 </span>Using Dictionaries</h3>
+        <p>
+          While designing Web APIs, you might encounter situations where you need to define an interface 
+          that has no method. That is, for certain requirements, you need a method to define a property 
+          bag object that would be expressed as an <code>Object</code> object or as an object literal in 
+          JavaScript implementation. This is where the dictionaries come into play.
+        </p>
+        <p>
+          This section presents a guideline to use dictionaries at the right place in your specification 
+          without any common mistake. First, in the "When to use" section, we show the typical cases you can 
+          make use of dictionaries. Second, in the "How to use" section, we provide a list of features that you
+          can check in order not to make a common mistake with dictionary usage.
+        </p>
+        <section id="when-to-use">
+          <h4><span class="secno">3.1.1 </span>When to use</h4>
+          <p>
+            Property bag objects are commonly used to define optional parameters for certain
+            methods of given interfaces. Also, they can be used to define necessary data
+            structures and data formats in a given application context. Here are the 
+            representative examples:
+          </p>
+          <p>
+            <strong>Case 1: Arguments to Interface Method</strong>
+            When designing interfaces using WebIDL, you can use dictionaries to define a
+            property bag object that carries multiple arguments to its method. In many 
+            practices, the methods take dictionary value as an optional argument
+            although it is not mandatory.
+          </p>
+          <div class="example"><div class="example-title"><span>Example 14</span></div><pre class="example highlight prettyprint"><span class="com">// WebIDL</span><span class="pln">
+</span><span class="kwd">partial</span><span class="pln"> </span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">IDBDatabaseSync</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">IDBObjectStoreSync</span><span class="pln"> createObjectStore </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">,</span><span class="pln"> 
+                                          optional </span><span class="typ">IDBObjectStoreParameters</span><span class="pln"> optionalParameters</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+dictionary </span><span class="typ">IDBObjectStoreParameters</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pun">?</span><span class="pln"> keyPath </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">boolean</span><span class="pln"> autoIncrement </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+</span><span class="com">// JavaScript</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> parameters </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    keyPath</span><span class="pun">:</span><span class="pln"> </span><span class="str">"id"</span><span class="pln">
+</span><span class="pun">,</span><span class="pln">   autoIncrement</span><span class="pun">:</span><span class="pln"> </span><span class="kwd">true</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+trans</span><span class="pun">.</span><span class="pln">db</span><span class="pun">.</span><span class="pln">createObjectStore</span><span class="pun">(</span><span class="str">"Contact"</span><span class="pun">,</span><span class="pln"> parameters</span><span class="pun">);</span></pre></div>
+          <p>
+            More examples in published specifications: 
+            <a href="http://www.w3.org/TR/FileAPI/#creating-revoking">http://www.w3.org/TR/FileAPI/#creating-revoking</a>
+          </p>
+          <p>
+            <strong>Case 2: Arguments to Constructor</strong>
+            Using dictionaries, you can also define a constructor arguments to the given
+            interfaces. This allows the developers create and pass an object or an
+            object literal to the constructor of the JavaScript objects.
+          </p>
+          <div class="example"><div class="example-title"><span>Example 15</span></div><pre class="example highlight prettyprint"><span class="com">// WebIDL</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">Constructor</span><span class="pun">(</span><span class="typ">IntentParameters</span><span class="pln"> </span><span class="kwd">params</span><span class="pun">),</span><span class="pln">
+ </span><span class="typ">Constructor</span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> action</span><span class="pun">,</span><span class="pln"> </span><span class="typ">DOMString</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> optional any data</span><span class="pun">,</span><span class="pln"> optional
+ sequence</span><span class="pun">&lt;</span><span class="typ">Transferable</span><span class="pun">&gt;</span><span class="pln"> transferList</span><span class="pun">)]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Intent</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute </span><span class="typ">DOMString</span><span class="pln">     action</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute </span><span class="typ">DOMString</span><span class="pln">     type</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute any           data</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute </span><span class="typ">MessagePort</span><span class="pun">[]</span><span class="pln"> ports</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute any           extras</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> postResult </span><span class="pun">(</span><span class="pln">any data</span><span class="pun">,</span><span class="pln"> optional sequence</span><span class="pun">&lt;</span><span class="typ">Transferable</span><span class="pun">&gt;</span><span class="pln"> transferable</span><span class="pun">);</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> postFailure </span><span class="pun">(</span><span class="pln">any data</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+dictionary </span><span class="typ">IntentParameters</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">              action</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">              type</span><span class="pun">;</span><span class="pln">
+    any                    data</span><span class="pun">;</span><span class="pln">
+    sequence</span><span class="pun">&lt;</span><span class="typ">Transferable</span><span class="pun">&gt;</span><span class="pln"> transfer</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">Object</span><span class="pln">                 extras</span><span class="pun">;</span><span class="pln">
+    URL                    service</span><span class="pun">;</span><span class="pln">
+    sequence</span><span class="pun">&lt;</span><span class="pln">URL</span><span class="pun">&gt;</span><span class="pln">          suggestions</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+</span><span class="com">// JavaScript</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> intent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Intent</span><span class="pun">({</span><span class="pln">
+                          action</span><span class="pun">:</span><span class="pln">    </span><span class="str">"http://intents.w3.org/pick"</span><span class="pun">,</span><span class="pln">
+                          type</span><span class="pun">:</span><span class="pln">      </span><span class="str">"image/png"</span><span class="pun">,</span><span class="pln">
+                          extras</span><span class="pun">:</span><span class="pln">    </span><span class="pun">{</span><span class="pln"> multiple</span><span class="pun">:</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">,</span><span class="pln"> count</span><span class="pun">:</span><span class="pln"> </span><span class="lit">5</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
+                          service</span><span class="pun">:</span><span class="pln">   </span><span class="str">"http://example.com/pick-image"</span><span class="pln">
+                      </span><span class="pun">});</span></pre></div>
+          <p>
+            More examples in published specifications:
+            <a href="http://www.w3.org/TR/2012/WD-dom-20120405/#interface-event">http://www.w3.org/TR/2012/WD-dom-20120405/#interface-event</a>
+            or <a href="http://www.w3.org/TR/FileAPI/#blob">http://www.w3.org/TR/FileAPI/#blob</a>
+          </p>
+          <p>
+            <strong>Case 3: User object</strong>
+            A dictionary is normatively defined as an associative array data type with a
+            fixed, ordered set of key-value pairs. That is, you can use a
+            dictionary to define a custom data type carrying a set of properties as an 
+            object format used in the given application context.
+          </p>
+          <div class="example"><div class="example-title"><span>Example 16</span></div><pre class="example highlight prettyprint"><span class="com">// WebIDL</span><span class="pln">
+</span><span class="kwd">partial</span><span class="pln"> dictionary </span><span class="typ">Media</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">MediaContent</span><span class="pln">   content </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{};</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">      title</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">      description</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">      type </span><span class="pun">=</span><span class="pln"> </span><span class="str">"*.*"</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">     author</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">DOMString</span><span class="pln">     path</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">float</span><span class="pln">         size</span><span class="pun">;</span><span class="pln">
+    sequence</span><span class="pun">&lt;</span><span class="typ">DOMString</span><span class="pun">&gt;</span><span class="pln">   tags</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">Date</span><span class="pln">          publishDate</span><span class="pun">;</span><span class="pln">
+    </span><span class="typ">Resolution</span><span class="pln">    resolution</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+</span><span class="com">// JavaScript</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> mediaSequence </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[];</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> mediaObject </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    content</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> uri</span><span class="pun">:</span><span class="pln"> </span><span class="str">"http://example.com/images/kitten.png"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
+    title</span><span class="pun">:</span><span class="pln">        </span><span class="str">""</span><span class="pun">,</span><span class="pln">
+    description</span><span class="pun">:</span><span class="pln">  </span><span class="str">""</span><span class="pun">,</span><span class="pln">
+    type</span><span class="pun">:</span><span class="pln">         </span><span class="str">"image/png"</span><span class="pun">,</span><span class="pln">
+    author</span><span class="pun">:</span><span class="pln">       </span><span class="str">""</span><span class="pun">,</span><span class="pln">
+    path</span><span class="pun">:</span><span class="pln">         </span><span class="str">"/local/path/to/png/kitten.png"</span><span class="pun">,</span><span class="pln">
+    size</span><span class="pun">:</span><span class="pln">         </span><span class="lit">1000000</span><span class="pun">,</span><span class="pln">
+    tags</span><span class="pun">:</span><span class="pln">         </span><span class="pun">[</span><span class="str">"tom and jerry"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"miyau"</span><span class="pun">],</span><span class="pln">
+    publishedDate</span><span class="pun">:</span><span class="pln">  </span><span class="str">""</span><span class="pun">,</span><span class="pln">
+    resolution</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> width</span><span class="pun">:</span><span class="pln"> </span><span class="lit">1920</span><span class="pun">,</span><span class="pln"> height</span><span class="pun">:</span><span class="pln"> </span><span class="lit">1080</span><span class="pln"> </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+mediaSequence</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="pln">mediaObject</span><span class="pun">);</span><span class="pln">
+intent</span><span class="pun">.</span><span class="pln">postResult</span><span class="pun">(</span><span class="pln">mediaSequence</span><span class="pun">);</span></pre></div>
+          <p>
+            More examples in published specifications:
+            <a href="http://www.w3.org/TR/2012/WD-gallery-20120712/#the-media-dictionary">http://www.w3.org/TR/2012/WD-gallery-20120712/#the-media-dictionary</a>
+            or
+            <a href="http://www.w3.org/TR/2012/WD-contacts-api-20120712/#the-contact-dictionary">http://www.w3.org/TR/2012/WD-contacts-api-20120712/#the-contact-dictionary</a>
+          </p>
+        </section>
+        <section id="how-to-use">
+          <h4><span class="secno">3.1.2 </span>How to use</h4>
+          <section id="use-sequence-type">
+            <h5><span class="secno">3.1.2.1 </span>Use sequence type</h5>
+            <p>
+              Dictionaries are always passed by value. Hence, when you define a dictionary 
+              member that should carry an array of certain value, use sequence type rather 
+              than Array type. Sequences are always passed by value while arrays are
+              passed by reference.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 17</span></div><pre class="example">dictionary IntentParameters {
+    DOMString              action;
+    DOMString              type;
+    any                    data;
+    sequence&lt;Transferable&gt; transfer;
+    Object                 extras;
+    URL                    service;
+    sequence&lt;URL&gt;         suggestions;
+};</pre></div>
+            <p>
+              In addition, there is another check point where sequence type should be used 
+              rather than array type. WebIDL describes that the dictionary 
+              type must not be used as a type of element of an array. Hence, when your 
+              dictionary has to carry an array of the dictionary values as its member,
+              use sequence type.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 18</span></div><pre class="example">dictionary DoNotUseLikeThis {
+    IntentParameters[] params;
+};
+
+dictionary UseLikeThis {
+    sequence&lt;IntentParameters&gt; params;
+};</pre></div>
+          </section>
+          <section id="inheritance">
+            <h5><span class="secno">3.1.2.2 </span>Inheritance</h5>
+            <p>
+              Dictionaries support inheritance as interface does. A dictionary must not 
+              be defined having a cycle in its hierarchy.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 19</span></div><pre class="example">dictionary Novel : Book {
+    // dictionary-members...
+};
+
+dictionary Book : Novel {
+    // dictionary-members...
+};</pre></div>
+          </section>
+          <section id="optional-dictionary-member-and-defaulting-values">
+            <h5><span class="secno">3.1.2.3 </span>Optional Dictionary Member and Defaulting Values</h5>
+            <p>
+              On a given dictionary value, the presence of each dictionary member is
+              optional. Therefore, in order to indicate that certain members are required fields in
+              your specification, use default values. Dictionary members with default values
+              are always considered to be present.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 20</span></div><pre class="example">dictionary PropertyBag {
+    DOMString iAmRequired = "default";
+    DOMString iAmOptional;
+};</pre></div>
+            <p>
+              In the example, since <code>iAmRequired</code> has default value, it is always
+              considered as present when the dictionary value is passed. On the other hand, when
+              <code>iAmOptional</code> is missing, it is regarded as absent.
+            </p>
+          </section>
+          <section id="attribute-constant-or-exception-fields">
+            <h5><span class="secno">3.1.2.4 </span>Attribute, Constant, or Exception fields</h5>
+            <p>
+              It is one of common mistakes that a dictionary type is used with attribute
+              field in interface definition. In face, dictionaries must not be used as the type
+              of attribute, constant or exception fields.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 21</span></div><pre class="example">interface HasWrongUsage {
+    readonly attribute IAmDictionary dict;
+};</pre></div>
+            <p>
+              To correct it, use type any or object and describe in prose that the
+              attribute takes the type of the dictionary.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 22</span></div><pre class="example">interface HasRightUsage {
+    readonly attribute any dict;
+};</pre></div>
+            <p>
+              In your spec, write "dict is of type IAmDictionary dictionary as defined in
+              [REFERENCE]".
+            </p>
+          </section>
+          <section id="no-nullable-dictionary">
+            <h5><span class="secno">3.1.2.5 </span>No Nullable Dictionary</h5>
+            <p>
+              Do not use dictionary type as inner type of a nullable type. By definition in WebIDL dictionary, 
+              valued with <code>null</code>, is regarded to be an empty dictionary, which is not <code>null</code>.
+              (It can even have the value of members defined in their default values.)
+            </p>
+            <div class="example"><div class="example-title"><span>Example 23</span></div><pre class="example">dictionary HasWrongUsage {
+    IAmDictionary? dict;
+};
+
+dictionary HasRightUsage {
+    IAmDictionary dict;
+};</pre></div>
+            <p>
+              As members of a dictionary are optional by definition, the developer who
+              reads your specification can omit the member that she intends to be not present in
+              the given application context.
+            </p>
+          </section>
+          <section id="partial-dictionary">
+            <h5><span class="secno">3.1.2.6 </span>Partial Dictionary</h5>
+            <p>
+              As with interfaces, the IDL for dictionaries can be split into multiple
+              parts by using partial dictionary definitions.
+            </p>
+            <div class="example"><div class="example-title"><span>Example 24</span></div><pre class="example">dictionary SomeDictionary {
+    // dictionary-members…
+};
+
+partial dictionary SomeDictionary {
+    // dictionary-members…
+};</pre></div>
+          </section>
+          <section id="extended-attributes">
+            <h5><span class="secno">3.1.2.7 </span>Extended attributes</h5>
+            <p>
+              Only the following two extended attributes are applicable to dictionary
+              members: <code>[Clamp]</code>, <code>[EnforceRange]</code>.
+            </p>
+        </section>
+      </section>
+      </section>
+      <section id="interfaces">
+        <h3><span class="secno">3.2 </span>Interfaces</h3>
+        <p>
+          Interfaces are the core work horse of WebIDL as they are the means through which functionality is
+          exposed. They are introduced with the <code>interface</code> keyword, have a name, and a body that
+          contains their definition in terms of constants, attributes, and methods (known as “operations” in 
+          WebIDL). A typical interface looks like this:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 25</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">BeerBottle</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// body goes here</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          Without modifiers, an interface will become available in the global context as an object with the
+          same name.
+        </p>
+        <p>
+          Interfaces can inherit from other interfaces, in which case they acquire their properties. Inheritance
+          is specified like this:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 26</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">BeerBottle</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="typ">Bottle</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// body</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Spork</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="typ">Spoon</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Fork</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// body</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          As in the last example above, an interface can inherit from any number of other interfaces. This practice
+          however is discouraged if it can be avoided as it entails more complex resolution rules and can be
+          difficult to implement in some contexts. Multiple inheritance is often a sign that the API design should
+          be revisited and can be simplified.
+        </p>
+        <section id="partial-interfaces">
+          <h4><span class="secno">3.2.1 </span>Partial Interfaces</h4>
+          <p>
+            It is common to have to add functionality to an existing interface, or to wish to define a single
+            interface spread over multiple locations. This can happen primarily for two reasons:
+          </p>
+          <ul>
+            <li>
+              The interface may be defined in another specification and extended by a new one. This is a
+              relatively common pattern for core interfaces off which things may be attached (e.g.
+              <code>Navigator</code>). It's an important aspect of the Web platform's core extensibility.
+            </li>
+            <li>
+              Some editors occasionally consider it useful to split the definition of an interface into
+              smaller pieces as part of the same document. This is sometimes done to make the specification
+              clearer (though the advantages here are debatable), or sometimes because part of the interface
+              is optional.
+            </li>
+          </ul>
+          <p>
+            In both cases there is a need to extend an existing interface, and inheritance is not the solution
+            since one effectively wishes to mix functionality into the existing interface, and not create a
+            new one.
+          </p>
+          <p>
+            A construct that was previously used for this <em>but is no longer recommended</em> was
+            to create the extending interface with <code>[NoInterfaceObject]</code> and then state
+            that the existing interface <code>implements</code> the extending one. This is
+            exemplified below:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 27</span></div><pre class="illegal-example highlight prettyprint"><span class="com">// we wish to add findUnicorns() to Navigator</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">NoInterfaceObject</span><span class="pun">]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">UnicornNavigator</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">Unicorns</span><span class="pln"> findUnicorns </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="typ">Navigator</span><span class="pln"> </span><span class="kwd">implements</span><span class="pln"> </span><span class="typ">UnicornNavigator</span><span class="pun">;</span><span class="pln">
+</span><span class="com">// you can now call navigator.findUnicorns("tab");</span></pre></div>
+          <p>
+            This is clunky however, and no longer necessary. It can still be found in some drafts but should
+            not be copied.
+          </p>
+          <p>
+            The proper way of implementing this feature is to use <code>partial</code> interfaces. These
+            are just like regular interfaces, except that they are defined to specify simply a fragment of
+            the whole, and can therefore add to existing interfaces that may be defined anywhere else.
+          </p>
+          <p>
+            The previous example can therefore best be rewritten as:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 28</span></div><pre class="example highlight prettyprint"><span class="kwd">partial</span><span class="pln"> </span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Navigator</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">Unicorns</span><span class="pln"> findUnicorns </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        </section>
+        <section id="constructor-and-namedconstructor">
+          <h4><span class="secno">3.2.2 </span>[Constructor] and [NamedConstructor]</h4>
+          <p>
+            If you have read WebIDL as found in many specifications, you will have noticed that there are
+            special constructs that can decorate existing ones in order to enhance them. These are called
+            “extended attributes” and their goal is not to change the WebIDL itself — which is to say that
+            they don't modify the abstract schema described by WebIDL — but to influence how the concrete
+            language bindings operate.
+          </p>
+          <p>
+            In this section we look at several extended attributes that have a bearing on how interfaces
+            are bound in JavaScript.
+          </p>
+          <p>
+            By default, when an interface is bound in JavaScript, an interface object for it is available
+            globally but it is not constructible. That is to say that it can be used for instance for
+            <code>instanceof</code> testing, or that it can expose some members such as static methods,
+            static attributes, or constants but you can't construct it with <code>new</code>. Try out
+            for instance in your JavaScript console:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 29</span></div><pre class="example highlight prettyprint"><span class="kwd">new</span><span class="pln"> </span><span class="typ">Node</span><span class="pun">()</span><span class="pln">
+</span><span class="com">// TypeError: Node is not a constructor</span></pre></div>
+          <p>
+            Therefore, in order to use a constructor in JavaScript, you will need to use the <code>[Constructor]</code>
+            extended attribute. <code>[Constructor]</code> can optionally take parameters (not giving it parentheses is
+            the same as giving it an empty set) and you can specify multiple ones.
+          </p>
+          <p>
+            An example might make this clearer:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 30</span></div><pre class="example highlight prettyprint"><span class="com">// new Unicorn();</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">Constructor</span><span class="pun">]</span><span class="pln">       </span><span class="com">// the same as [Constructor()]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// ...</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+</span><span class="com">// new Unicorn();</span><span class="pln">
+</span><span class="com">// new Unicorn("tab");</span><span class="pln">
+</span><span class="com">// new Unicorn(5, 82);</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">Constructor</span><span class="pun">,</span><span class="pln">
+ </span><span class="typ">Constructor</span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">),</span><span class="pln">
+ </span><span class="typ">Constructor</span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> wingspan</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> age</span><span class="pun">)]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// ...</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+          <p>
+            At times it is desirable to have the constructor for an interface have a different name from that
+            of the interface. For such cases, use the <code>[NamedConstructor]</code> extended attribute. It
+            works in the exact same way as <code>[Constructor]</code>, except that it also accepts an identifier
+            that specifies the name to use for the constructor. An example will show the syntax:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 31</span></div><pre class="example highlight prettyprint"><span class="com">// new Rose();</span><span class="pln">
+</span><span class="com">// new Rose("pink");</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">NamedConstructor</span><span class="pun">=</span><span class="typ">Rose</span><span class="pun">,</span><span class="pln">
+ </span><span class="typ">NamedConstructor</span><span class="pun">=</span><span class="typ">Rose</span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> colour</span><span class="pun">)]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">RosoideaeRosa</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// ...</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        </section>
+        <section id="arrayclass">
+          <h4><span class="secno">3.2.3 </span>[ArrayClass]</h4>
+          <p>
+            Another useful extended attribute for interfaces is <code>[ArrayClass]</code>. It comes in handy when
+            it is necessary to define an interface that can behave just like a real JavaScript array. It is meant
+            to be used with the <code>getter</code>, <code>setter</code>, <code>creator</code>, and <code>deleter</code> 
+            keywords for indexed properties.
+          </p>
+          <p>
+            These keywords are rather straightforward:
+          </p>
+          <ul>
+            <li>
+              The <code>getter</code> defines what happens when a value is fetched from the array, so that for instance 
+              the following can work: <code class="highlight prettyprint"><span class="kwd">var</span><span class="pln"> carrots </span><span class="pun">=</span><span class="pln"> shoppingList</span><span class="pun">[</span><span class="lit">7</span><span class="pun">];</span></code>.
+            </li>
+            <li>
+              The <code>setter</code> and <code>creator</code> is the reverse and defines what happens when a value is 
+              set in the array (on an existing entry or a newly minted one — for arrays you usually want to use the
+              same operation for <code>setter</code> and <code>creator</code>), for instance with the following: 
+              <code class="highlight prettyprint"><span class="pln">shoppingList</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="str">"beer"</span><span class="pun">;</span></code> or 
+              <code class="highlight prettyprint"><span class="pln">shoppingList</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="str">"unicorns"</span><span class="pun">);</span></code>
+            </li>
+            <li>
+              Finally, the <code>deleter</code> defines what happens when a value is removed from the array, for instance 
+              with: <code class="highlight prettyprint"><span class="pln">shoppingList</span><span class="pun">.</span><span class="pln">pop</span><span class="pun">();</span></code>.
+            </li>
+          </ul>
+          <p>
+            Assembling this all together looks like this:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 32</span></div><pre class="example highlight prettyprint"><span class="pun">[</span><span class="typ">ArrayClass</span><span class="pun">]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">ShoppingList</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    attribute </span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> length</span><span class="pun">;</span><span class="pln">
+    getter </span><span class="kwd">object</span><span class="pln"> getShoppingItem </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> index</span><span class="pun">);</span><span class="pln">
+    </span><span class="com">// note how both creator and setter are used here</span><span class="pln">
+    creator setter </span><span class="kwd">object</span><span class="pln"> setShoppingItem </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> index</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">object</span><span class="pln"> item</span><span class="pun">);</span><span class="pln">
+    deleter </span><span class="kwd">void</span><span class="pln"> removeShoppingItem </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> index</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+          <p>
+            The above give you a <code>ShoppingList</code> interface. You could use it as follows:
+          </p>
+          <div class="example"><div class="example-title"><span>Example 33</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> list </span><span class="pun">=</span><span class="pln"> obj</span><span class="pun">.</span><span class="pln">findShoppingListFor</span><span class="pun">(</span><span class="str">"robin"</span><span class="pun">);</span><span class="pln">
+list </span><span class="pun">=</span><span class="pln"> list</span><span class="pun">.</span><span class="pln">concat</span><span class="pun">(</span><span class="str">"beer tea basil ham cat-food"</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="str">" "</span><span class="pun">));</span><span class="pln">
+list</span><span class="pun">.</span><span class="pln">forEach</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">item</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    remindUser</span><span class="pun">(</span><span class="str">"Shop for "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> item</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">});</span><span class="pln">
+list</span><span class="pun">.</span><span class="pln">pop</span><span class="pun">();</span><span class="pln"> </span><span class="com">// bad cat</span><span class="pln">
+console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"Getting "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> list</span><span class="pun">.</span><span class="pln">join</span><span class="pun">(</span><span class="str">"\n"</span><span class="pun">));</span></pre></div>
+        </section>
+        <section id="when-to-use-nointerfaceobject">
+          <h4><span class="secno">3.2.4 </span>When to use [NoInterfaceObject]</h4>
+          <p>
+            There have been many excessive uses of <code>[NoInterfaceObject]</code> — unless you are absolutely
+            certain that it is what you want, you should avoid it. The odds are good that what you are looking
+            for is either a <a href="#partial-interfaces">partial interface</a> or a <a href="#dictionaries">dictionary</a>.
+          </p>
+          <p>
+            In practice it should only be used for abstract interfaces that enrich a concrete one through the
+            <code>implements</code> statement.
+          </p>
+        </section>
+      </section>
+      <section id="constants">
+        <h3><span class="secno">3.3 </span>Constants</h3>
+        <p>
+          Constants are a simple construct that does exactly what it say on the tin. It creates a member of a given type on
+          an interface (or an exception) the value of which cannot be changed, introduced with the <code>const</code>
+          keyword.
+        </p>
+        <p>
+          Constants are limited in the values they can accept. They can take numerical values (including the likes of
+          <code>Infinity</code> and <code>NaN</code>), booleans, or <code>null</code> (for cases in which you might forget
+          what the value of <code>null</code> is). Examples tell you all you need to know about the syntax:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 34</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Something</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">const</span><span class="pln"> </span><span class="kwd">short</span><span class="pln"> ANSWER </span><span class="pun">=</span><span class="pln"> </span><span class="lit">42</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">const</span><span class="pln"> </span><span class="kwd">boolean</span><span class="pln"> WRONG </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+    </span><span class="kwd">const</span><span class="pln"> </span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> BIG_NUMBER </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">Infinity</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          While they were previously used rather commonly, there are decreasing reasons to want to resort to
+          constants on interfaces. Before using them, be sure to be aware of <a href="#enums">Enums</a> and
+          <a href="numerical-constants">Don't Use Numerical Constants</a>.
+        </p>
+      </section>
+      <section id="enums">
+        <h3><span class="secno">3.4 </span>Enums</h3>
+        <p>
+          An enumeration is used to specify a set of strings that are acceptable, it is typically used
+          to define options that are restricted to a limited vocabulary.
+        </p>
+        <p>
+          Enumerations are defined with the <code>enum</code> keyword, a type name, and then a list of
+          strings (with no duplicates) inside curly brackets. The name can then be used where type
+          identifiers usually appear.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 35</span></div><pre class="example highlight prettyprint"><span class="kwd">enum</span><span class="pln"> </span><span class="typ">Unit</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="str">"m"</span><span class="pun">,</span><span class="pln">
+    </span><span class="str">"cm"</span><span class="pun">,</span><span class="pln">
+    </span><span class="str">"mm"</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> setHornSize </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> length</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Unit</span><span class="pln"> unit</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// This works</span><span class="pln">
+</span><span class="com">//    unicorn.setHornSize(42, "cm");</span><span class="pln">
+</span><span class="com">// This blows up as well it should</span><span class="pln">
+</span><span class="com">//    unicorn.setHornSize(7, "in");</span></pre></div>
+        <p>
+          When an attribute is defined to be an enumeration type, then assigning a value to it that is
+          not in the enumerated set simply does nothing.
+        </p>
+      </section>
+      <section id="attributes">
+        <h3><span class="secno">3.5 </span>Attributes</h3>
+        <p>
+          Attributes are a fundamental building block of interfaces. They are used to specify data fields of
+          a given type. An attribute is introduced with the <code>attribute</code> keyword.
+        </p>
+        <p>
+          They can be read-only in which case they cannot be assigned to, or read-write. It is important to
+          note that if the value of a read-only attribute is not atomic but has attributes of its own, those
+          are not made read-only as well — they keep operating just as specified by that type. An example:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 36</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Name</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    attribute </span><span class="typ">DOMString</span><span class="pln"> givenName</span><span class="pun">;</span><span class="pln">
+    attribute </span><span class="typ">DOMString</span><span class="pln"> familyName</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Person</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">readonly</span><span class="pln"> attribute </span><span class="typ">Name</span><span class="pln"> fullName</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          In the above definition, it is impossible to assign a new value of the <code>fullName</code> field
+          of <code>Person</code>. So you could not do the following: <code>billie.name = someName;</code>.
+          But the fields of the <code>Name</code> object itself stay just as re-write so that they can still
+          be set, as in <code>billie.name.familyName = "The Cat";</code>.
+        </p>
+        <p>
+          An attribute can also be said to be <code>static</code>, in which case it is an attribute of the
+          interface rather than being associated with the object. Static attributes are rarely good ideas
+          and can tend to indicate a bad design.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 37</span></div><pre class="example highlight prettyprint"><span class="com">// set the debug flag globally</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Runtime</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">static</span><span class="pln"> attribute </span><span class="kwd">boolean</span><span class="pln"> debug</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          A specific behaviour can be added to attributes to define how a given object is turned into a string,
+          using the <code>stringifier</code> modifier. When a object is cast to a string, if a <code>stringifier</code>
+          has been specified (there can be only one) then the string produced will be the value of that 
+          attribute. Naturally, that attribute has to be of type <code>DOMString</code>.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 38</span></div><pre class="example highlight prettyprint"><span class="com">// another Person interface</span><span class="pln">
+</span><span class="pun">[</span><span class="typ">Constructor</span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">short</span><span class="pln"> age</span><span class="pun">)]</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    stringifier attribute </span><span class="typ">DOMString</span><span class="pln"> fullName</span><span class="pun">;</span><span class="pln">
+    attribute </span><span class="kwd">short</span><span class="pln"> age</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          This can then be used with the following code:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 39</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> uni </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pun">(</span><span class="str">"Tab"</span><span class="pun">,</span><span class="pln"> </span><span class="lit">42</span><span class="pun">);</span><span class="pln">
+document</span><span class="pun">.</span><span class="pln">getElementById</span><span class="pun">(</span><span class="str">"output-unicorn"</span><span class="pun">).</span><span class="pln">textContent </span><span class="pun">=</span><span class="pln"> uni</span><span class="pun">;</span><span class="pln">
+</span><span class="com">// that element now has content "Tab";</span></pre></div>
+      </section>
+      <section id="methods">
+        <h3><span class="secno">3.6 </span>Methods</h3>
+        <p>
+          Methods are the workhorses of WebIDL. In the specification they are known as “operations”, but
+          since everyone calls them methods we have decided to stick to this term as it will be more readily
+          understood. They are used to define behaviour.
+        </p>
+        <p>
+          Methods have a return type, and a list of arguments which can be precisely specified. As for attributes,
+          a method can also be said to be <code>static</code>, in which case they become available on the
+          interface object directly.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 40</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">KittenFactory</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">static</span><span class="pln"> </span><span class="typ">Kitten</span><span class="pln"> makeMeANewKitten </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> name</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// var billie = KittenFactory.makeMeANewKitten("Billie The Cat");</span></pre></div>
+        <p>
+          The return type can be any type or <code>void</code>, which indicates that nothing is returned.
+        </p>
+        <p>
+          The most complex part of a method's definition is its arguments list. It can contain any number of
+          argument definitions, each of which has a type and a name; all of them separated by commas.
+        </p>
+        <p>
+          Note that it used to be that arguments were all preceded by the <code>in</code> keyword, which was
+          a leftover from OMG IDL. Since Web specifications make no use of the <code>out</code> and <code>inout</code>
+          argument styles of the aptly named OMG specification, the <code>in</code> keyword has been dropped and
+          must not be used.
+        </p>
+        <p>
+          A basic method therefore looks like this:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 41</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> gallop </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> speed</span><span class="pun">,</span><span class="pln"> </span><span class="typ">Pattern</span><span class="pln"> rhythm</span><span class="pun">);</span><span class="pln">
+    </span><span class="typ">AudioStream</span><span class="pln"> speak </span><span class="pun">();</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+        <p>
+          The arguments can be modified in a number of ways. First, an argument can be marked as
+          <code>optional</code> in which case it can be omitted when the method is invoked. If so, 
+          it should be noted that all the arguments that are positioned after it in the list will 
+          also be considered optional.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 42</span></div><pre class="example highlight prettyprint"><span class="kwd">enum</span><span class="pln"> </span><span class="typ">Direction</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="str">"left"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"right"</span><span class="pln"> </span><span class="pun">};</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Dahut</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> turnAround </span><span class="pun">(</span><span class="pln">optional </span><span class="typ">Direction</span><span class="pln"> whichWay</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">short</span><span class="pln"> degrees</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// I can call someDahut.turnAround()</span></pre></div>
+        <p>
+          Note that in the above it is not indicated that the <code>degrees</code> argument is optional even
+          though it implicitly is. For readability purposes, it is best to always indicate that an argument
+          is optional even when it implicitly is as someone scanning the method definition quickly from the
+          end might not notice it.
+        </p>
+        <p>
+          A problem with the above method definition is also that while my dahut can only turn left or
+          right, there is no indication of what happens if I omit the argument. Is it right or left? Or
+          random? This can be remedied in specification prose but it is better to specify a default
+          directly in the WebIDL, as follows:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 43</span></div><pre class="example highlight prettyprint"><span class="kwd">enum</span><span class="pln"> </span><span class="typ">Direction</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="str">"left"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"right"</span><span class="pln"> </span><span class="pun">};</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Dahut</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> turnAround </span><span class="pun">(</span><span class="pln">optional </span><span class="typ">Direction</span><span class="pln"> whichWay </span><span class="pun">=</span><span class="pln"> </span><span class="str">"left"</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">short</span><span class="pln"> degrees</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// when I call someDahut.turnAround(), it now turns left</span></pre></div>
+        <p>
+          An argument can also be <em>variadic</em>. This indicates that that argument can be repeated zero or
+          more times when the method is called. This can only be done if it is the last argument in the arguments
+          list. Variadic arguments are specified by appending "<code>...</code>" to the type.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 44</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Restaurant</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="typ">DeferredFood</span><span class="pln"> orderFood </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pun">...</span><span class="pln"> dishName</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// I can now call</span><span class="pln">
+</span><span class="com">//  resto.orderFood("spam", "spam", "spam", "spam", "spam", "spam", "spam", "spam", "spam");</span></pre></div>
+      </section>
+      <section id="overloading-and-union-types">
+        <h3><span class="secno">3.7 </span>Overloading and Union Types</h3>
+        <p>
+          WebIDL makes it possible to use overloading of methods in interfaces so that there can be
+          more than one method with a given name that takes a different set of arguments. This happens
+          simply by specifying the method more than once.
+        </p>
+        <p>
+          Note that method overloading is rarely needed and should usually be avoided unless there is
+          no better solution, if only because the restrictions on how it can be used and the resolution
+          rules can be quite complex. A lot of the cases in which one may think that overloading may
+          be required are actually better addressed with optional arguments, variadic arguments,
+          or at times union types.
+        </p>
+        <p>
+          Union types are used where types can be used, but instead of specifying just one type they
+          indicated that the values can be of several different types. They are specified between parentheses,
+          with each type separated by the <code>or</code> keyword.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 45</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Party</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> bookDate </span><span class="pun">((</span><span class="typ">Date</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> </span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> </span><span class="typ">DOMString</span><span class="pun">)</span><span class="pln"> date</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+</span><span class="com">// I can now call with...</span><span class="pln">
+</span><span class="com">//  a JS Date object</span><span class="pln">
+</span><span class="com">//    party.bookDate(new Date(…));</span><span class="pln">
+</span><span class="com">//  time since epoch</span><span class="pln">
+</span><span class="com">//    party.bookDate(1337998907987);</span><span class="pln">
+</span><span class="com">//  a magic string</span><span class="pln">
+</span><span class="com">//    party.bookDate("tomorrow");</span></pre></div>
+        <p>
+          This can be useful for return values as well:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 46</span></div><pre class="example highlight prettyprint"><span class="kwd">interface</span><span class="pln"> </span><span class="typ">Cryptozoology</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="pun">(</span><span class="typ">Dahut</span><span class="pln"> </span><span class="kwd">or</span><span class="pln"> </span><span class="typ">Unicorn</span><span class="pun">)</span><span class="pln"> findAnimal </span><span class="pun">();</span><span class="pln">
+</span><span class="pun">};</span></pre></div>
+      </section>
+      <section id="exceptions">
+        <h3><span class="secno">3.8 </span>Exceptions</h3>
+        <p>
+          Exceptions are special classes that can be used to be thrown. They are very limited interfaces
+          that can only define constants, and a limited kind of attribute (known as “fields”) that are
+          defined solely by a type and a name.
+        </p>
+        <p>
+          All exceptions automatically get a <code>message</code> and a <code>name</code> field (for which
+          the specification should provide values), such that those need not be explicitly specified.
+        </p>
+        <p>
+          It is <strong>strongly</strong> recommended that new specifications do <strong>not</strong> define
+          new exceptions, but rather reuse <code>DOMException</code> while providing a specific <code>name</code>
+          for it.
+        </p>
+        <p>
+          In addition to <code>DOMException</code>, a number of predefined exceptions are also available that 
+          can be reused by specifications. This list is: <code>Error</code>, <code>EvalError</code>, <code>RangeError</code>, 
+          <code>ReferenceError</code>, <code>SyntaxError</code>, <code>TypeError</code> and <code>URIError</code>
+          (these correspond to their JavaScript equivalents as defined in [<cite><a href="#bib-ECMA-262" class="bibref">ECMA-262</a></cite>]).
+        </p>
+        <p>
+          Due to these constraints on usage, we have decided not to delve deeply into exceptions in this
+          section.
+        </p>
+      </section>
+      <section id="callbacks">
+        <h3><span class="secno">3.9 </span>Callbacks</h3>
+        <p>
+          It is very common for asynchronous methods in Web APIs to accept callbacks, which are functions
+          that can be called with specific arguments when called back. These are specified with the
+          <code>callback</code> keyword, a name, a return type, and an arguments list which is similar
+          to that used for a method.
+        </p>
+        <p>
+          Specifying callbacks is simple:
+        </p>
+        <div class="example"><div class="example-title"><span>Example 47</span></div><pre class="example highlight prettyprint"><span class="com">// defining callbacks</span><span class="pln">
+callback </span><span class="typ">LandingOk</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">unsigned</span><span class="pln"> </span><span class="kwd">long</span><span class="pln"> landingSpeed</span><span class="pun">);</span><span class="pln">
+callback </span><span class="typ">LandingFail</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">void</span><span class="pln"> </span><span class="pun">(</span><span class="typ">DOMString</span><span class="pln"> gravity</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">short</span><span class="pln"> casualties</span><span class="pun">);</span><span class="pln">
+
+</span><span class="com">// using callbacks</span><span class="pln">
+</span><span class="kwd">interface</span><span class="pln"> </span><span class="typ">FlyingUnicorn</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">void</span><span class="pln"> land </span><span class="pun">(</span><span class="typ">LandingOk</span><span class="pun">,</span><span class="pln"> </span><span class="typ">LandingFail</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+</span><span class="com">// in code</span><span class="pln">
+myFlyingUnicorn</span><span class="pun">.</span><span class="pln">land</span><span class="pun">(</span><span class="pln">
+        </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">speed</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"Successfully landed at "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> speed </span><span class="pun">+</span><span class="pln"> </span><span class="str">"kph!"</span><span class="pun">);</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln">
+    </span><span class="pun">,</span><span class="pln">   </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">severity</span><span class="pun">,</span><span class="pln"> dead</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+            console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"Crashed landing. Damage level: "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> severity </span><span class="pun">+</span><span class="pln"> </span><span class="str">". Dead elves: "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> dead</span><span class="pun">);</span><span class="pln">
+        </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">);</span></pre></div>
+      </section>
+      <section id="sequences-and-arrays">
+        <h3><span class="secno">3.10 </span>Sequences and Arrays</h3>
+        <div class="issue"><div class="issue-title"><span>Issue 1</span></div><p class="">
+          I admit to still being largely mystified by this. Recent discussion on the mailing list does
+          not at all dispel that feeling.
+        </p></div>
+      </section>
+      <section id="webidl-legacy-features">
+        <h3><span class="secno">3.11 </span>WebIDL Legacy Features</h3>
+        <p>
+          The features of WebIDL listed in this section have been specified for the sole purpose of describing
+          legacy APIs such as are found in “DOM 0”. It is particularly important that you do not use them unless
+          you are trying to document one such API — they must not be used for any kind of new work. The list
+          includes:
+        </p>
+        <div class="issue"><div class="issue-title"><span>Issue 2</span></div><p class="">
+          Get an actual list.
+        </p></div>
+        <!-- 
+          - legacy*
+          - [LenientThis] 
+          - [NamedPropertiesObject] 
+          - [TreatNonCallableAsNull] 
+        -->
+      </section>
+      <!-- 
+        Deferred to next revision:
+          Special Operations
+          Typedefs and Implements
+          Basic Types
+            - [Clamp], [EnforceRange]
+            - [TreatNullAs] [TreatUndefinedAs]
+      -->
+    </section>
+    <section id="common-patterns">
+      <!--OddPage--><h2><span class="secno">4. </span>Common Patterns</h2>
+      <p>
+        Beyond understanding the basics of WebIDL there are common and useful idiomatic constructs that
+        can usefully be shared. This section endeavours to progressively accrue some more, so please send
+        yours in!
+      </p>
+      <section id="ensuring-that-feature-detection-is-possible">
+        <h3><span class="secno">4.1 </span>Ensuring that Feature Detection is Possible</h3>
+        <div class="issue"><div class="issue-title"><span>Issue 3</span></div><p class="">
+          We had talked of Yehuda writing this section. I will see if I can hunt him down.
+        </p></div>
+      </section>
+      <section id="specifying-callbacks">
+        <h3><span class="secno">4.2 </span>Specifying Callbacks</h3>
+        <p>
+          Asynchronous method calls require a point of reentry in the form of a callback. There are multiple
+          ways of specifying these, none of which is consensually consider the one and only approach.
+        </p>
+        <p>
+          One is <dfn id="dfn-success-error-callback-functions">success/error callback functions</dfn>, as used in [<cite><a href="#bib-GEOLOCATION-API" class="bibref">GEOLOCATION-API</a></cite>]. It takes the shape of a method
+          call that accepts a callback function for success followed by one for errors. There may be arguments
+          before the success callback, and the error callback is usually optional.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 48</span></div><pre class="example highlight prettyprint"><span class="pln">navigator</span><span class="pun">.</span><span class="pln">petKitten</span><span class="pun">(</span><span class="pln">
+    </span><span class="kwd">function</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten is purring"</span><span class="pun">);</span><span class="pln">
+    </span><span class="pun">},</span><span class="pln">
+    </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">err</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten hates you, because: "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> err</span><span class="pun">);</span><span class="pln">
+    </span><span class="pun">}</span><span class="pln">
+</span><span class="pun">);</span></pre></div>
+        <p>
+          Downsides of this approach are that it is a little more verbose and does not encourage error handling. It
+          also lacks in extensibility since adding new arguments to the method will typically require placing them
+          after the optional error handler — making them de facto optional. Likewise, extending it to support not
+          just callbacks for success and error but also for other situations that may warrant reporting information
+          back (e.g. progress being made) is clumsy at best. Since it is only used in [<cite><a href="#bib-GEOLOCATION-API" class="bibref">GEOLOCATION-API</a></cite>] it does not
+          appear to be a required pattern for consistency.
+        </p>
+        <p>Another approach is to define new DOM Events that are called when an underlying system changes.</p>
+        <div class="example"><div class="example-title"><span>Example 49</span></div><pre class="example higlight">window.addEventListener("kittenpurr", function() {
+    console.log("kitten is purring");
+}, false);</pre></div>
+        <p>On one hand, most developers are quite familiar with DOM Events, and they make it easy to have several handlers for a given event.</p>
+        <p>On the other hand, using DOM Events for listening to systems that need specific activation (e.g. powering up) are usually not a good idea: <code>addEventListener</code> is supposed to be free from side effects, and associating activation code with it breaks that promise. The [<cite><a href="#bib-DEVICE-ORIENTATION" class="bibref">DEVICE-ORIENTATION</a></cite>] specification is as such an <strong>anti-pattern</strong> that should not be replicated. See <a href="http://lists.w3.org/Archives/Public/public-device-apis/2011Nov/0164.html">some discussions on side effects in addEventListener</a>.</p>
+        <p>
+          Another is <dfn id="dfn-returning-an-eventtarget-object">returning an EventTarget object</dfn>, as pioneered by [<cite><a href="#bib-XMLHTTPREQUEST" class="bibref">XMLHTTPREQUEST</a></cite>]. This consists
+          in opening a request that returns an object on which event handlers can be registered, then starting
+          that request with a specific call.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 50</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> kitpet </span><span class="pun">=</span><span class="pln"> navigator</span><span class="pun">.</span><span class="pln">openKittenPetting</span><span class="pun">();</span><span class="pln">
+
+kitpet</span><span class="pun">.</span><span class="pln">onpurr </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten is purring"</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+kitpet</span><span class="pun">.</span><span class="pln">ondrool </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten is now drooling"</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+kitpet</span><span class="pun">.</span><span class="pln">onviciousbite </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten bit your hand off"</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">};</span><span class="pln">
+
+kitpet</span><span class="pun">.</span><span class="pln">start</span><span class="pun">();</span></pre></div>
+        <p>
+          The approach is the most verbose and does not encourage error handling, but it does have the advantages
+          of being trivially extended for greater feedback, and of being familiar to users of [<cite><a href="#bib-XMLHTTPREQUEST" class="bibref">XMLHTTPREQUEST</a></cite>]
+          (and now [<cite><a href="#bib-INDEXEDDB" class="bibref">INDEXEDDB</a></cite>]). It can, however, feel rather overkill if extensions for additional events does
+          not seem likely.
+        </p>
+        <p>
+          Then there are <dfn id="dfn-nodejs-style-callbacks">NodeJS style callbacks</dfn>. For every asynchronous operation, every callback takes
+          as first parameter an error object which is <code>null</code> when the operation was a success, followed
+          by as many pieces of information as are needed to capture the success.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 51</span></div><pre class="example highlight prettyprint"><span class="pln">navigator</span><span class="pun">.</span><span class="pln">petKitten</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">err</span><span class="pun">,</span><span class="pln"> state</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">err</span><span class="pun">)</span><span class="pln"> console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten mauled your face with extreme prejudice"</span><span class="pun">);</span><span class="pln">
+    </span><span class="kwd">else</span><span class="pln"> console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kittem manifest joy by "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> state</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">});</span></pre></div>
+        <p>
+          The primary value in this approach is that it puts errors "right there" where they are likely to be handled.
+          Its consistency is also very helpful in creating chains of callbacks, a feature that proves precious
+          when multiple callbacks can become nested. The major downside of this approach is that it is currently
+          not used in the rest of stack and therefore probably only familiar to NodeJS developers (which granted
+          represent a fast-growing proportion of the general web developer population).
+        </p>
+        <p>
+          Finally there are <dfn id="dfn-promises">promises</dfn>. These are similar to <a class="internalDFN" href="#dfn-returning-an-eventtarget-object">returning an EventTarget object</a> but
+          more generic and use a slightly different style.
+        </p>
+        <div class="example"><div class="example-title"><span>Example 52</span></div><pre class="example highlight prettyprint"><span class="kwd">var</span><span class="pln"> promise </span><span class="pun">=</span><span class="pln"> navigator</span><span class="pun">.</span><span class="pln">petKitten</span><span class="pun">();</span><span class="pln">
+promise</span><span class="pun">.</span><span class="kwd">then</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten is purring"</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}).</span><span class="pln">fail</span><span class="pun">(</span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">"kitten bit your hand off"</span><span class="pun">);</span><span class="pln">
+</span><span class="pun">}).</span><span class="pln">run</span><span class="pun">();</span></pre></div>
+        <p>
+          There is elegance and flexibility in promises, but to date they are used in no Web specification.
+        </p>
+      </section>
+      <section id="specifying-events">
+        <h3><span class="secno">4.3 </span>Specifying Events</h3>
+        <div class="issue"><div class="issue-title"><span>Issue 4</span></div><p class="">
+          This ought to be relatively straightforward.
+        </p></div>
+      </section>
+    </section>
+    <div class="issue"><div class="issue-title"><span>Issue 5</span></div><p class="">
+      Should we have a section on specifying with Web Intents?
+    </p></div>
+    <section id="other-sources" class="appendix">
+      <!--OddPage--><h2><span class="secno">A. </span>Other Sources</h2>
+      <p>
+        A number of other sources provide information that can be useful in writing specifications. This list
+        is by no means complete, suggestions are welcome.
+      </p>
+      <p>
+        Anne maintains a document called <a href="http://wiki.whatwg.org/wiki/Howto_spec">How To Spec</a> on 
+        how to specify certain features of the platform. Some parts of it are tailored to the specific markup
+        that is used when processing specifications with Anolis, but the general advice is sound.
+      </p>
+    </section>
+    <section id="acknowledgements" class="appendix">
+      <!--OddPage--><h2><span class="secno">B. </span>Acknowledgements</h2>
+      <p>
+        Many thanks to the following people, in no particular order: Cameron McCormack, Marcos Càceres, 
+        Andreas Gal, Rick Waldron.
+      </p>
+    </section>
+  
+
+<section class="appendix" id="references"><!--OddPage--><h2><span class="secno">C. </span>References</h2><section id="normative-references"><h3><span class="secno">C.1 </span>Normative references</h3><dl class="bibliography"><dt id="bib-WEBIDL">[WEBIDL]</dt><dd>Cameron McCormack. <a href="http://www.w3.org/TR/2011/WD-WebIDL-20110927/"><cite>Web IDL.</cite></a> 27 September 2011. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2011/WD-WebIDL-20110927/">http://www.w3.org/TR/2011/WD-WebIDL-20110927/</a> 
+</dd></dl></section><section id="informative-references"><h3><span class="secno">C.2 </span>Informative references</h3><dl class="bibliography"><dt id="bib-DEVICE-ORIENTATION">[DEVICE-ORIENTATION]</dt><dd>Steve Block, Andrei Popescu. <a href="http://www.w3.org/TR/2011/WD-orientation-event-20111201/">DeviceOrientation Event Specification</a>. 1 December 2011. Last Call Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2011/WD-orientation-event-20111201/">http://www.w3.org/TR/2011/WD-orientation-event-20111201/</a>
+</dd><dt id="bib-ECMA-262">[ECMA-262]</dt><dd><a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm"><cite>ECMAScript Language Specification.</cite></a> June 2011. URL: <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">http://www.ecma-international.org/publications/standards/Ecma-262.htm</a> 
+</dd><dt id="bib-GEOLOCATION-API">[GEOLOCATION-API]</dt><dd>Andrei Popescu. <a href="http://www.w3.org/TR/2008/WD-geolocation-API-20081222/"><cite>Geolocation API Specification.</cite></a> 22 December 2008. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2008/WD-geolocation-API-20081222/">http://www.w3.org/TR/2008/WD-geolocation-API-20081222/</a> 
+</dd><dt id="bib-INDEXEDDB">[INDEXEDDB]</dt><dd>Nikunj Mehta, Jonas Sicking, Eliot Graff, Andrei Popescu, Jeremy Orlow. <a href="http://www.w3.org/TR/IndexedDB/">Indexed Database API</a>. April 2011. Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/IndexedDB/">http://www.w3.org/TR/IndexedDB/</a>
+</dd><dt id="bib-XMLHTTPREQUEST">[XMLHTTPREQUEST]</dt><dd>Anne van Kesteren. <a href="http://www.w3.org/TR/2008/WD-XMLHttpRequest-20080415"><cite>The XMLHttpRequest Object.</cite></a> 15 April 2008. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2008/WD-XMLHttpRequest-20080415">http://www.w3.org/TR/2008/WD-XMLHttpRequest-20080415</a> 
+</dd></dl></section></section></body></html>
