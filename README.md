@@ -1,3 +1,4 @@
+You can [view the cookbook](http://darobin.github.com/api-design-cookbook/) right here on Github! 
 
 This is a cookbook produced jointly at W3C by:
 
